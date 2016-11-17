@@ -1,7 +1,6 @@
 void setup() {
     /* add setup code here */
     /* werkt het??? */ 
-    /* jfoiapfeajfpoiwajfpoiwaoi */
 }
 
 void loop() {
