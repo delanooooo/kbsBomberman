@@ -3,6 +3,7 @@ void setup() {
     /*werkt het???*/ 
     /* jfoiapfeajfpoiwajfpoiwaoi */
 	/* hoi*/
+	test
 }
 
 void loop() {
