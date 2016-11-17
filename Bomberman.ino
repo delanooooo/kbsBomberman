@@ -1,8 +1,10 @@
 void setup() {
     /* add setup code here */
     /*werkt het???*/ 
-    /* jfoiapfeajfpoiwajfpoiwaoi */
+	/* jfoiapfeajfpoiwajfpoiwaoi */
 	/* hoi*/
+	/*more tests :)*/
+
 }
 
 void loop() {
