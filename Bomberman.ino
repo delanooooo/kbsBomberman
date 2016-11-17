@@ -1,9 +1,7 @@
 void setup() {
     /* add setup code here */
-    /*werkt het???*/ 
+    /* werkt het??? */ 
     /* jfoiapfeajfpoiwajfpoiwaoi */
-	/* hoi*/
-	test
 }
 
 void loop() {
