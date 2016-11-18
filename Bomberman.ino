@@ -3,6 +3,7 @@ void setup() {
     /*werkt het???*/ 
 	/*TEST Gerbrand*/
 	/*test2*/
+    /*3*/
 }
 
 void loop() {
