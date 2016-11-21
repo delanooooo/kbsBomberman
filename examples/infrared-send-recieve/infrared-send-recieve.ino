@@ -7,19 +7,7 @@ uint16_t sensor = 0x00;
 
 uint16_t timer = 0;
 int main(void) {
-    cli();
-	
-	PCICR |= (1 << PCIE0);
-	PCMSK0 |= (1<< PCINT0);
-	EICRA = (1 << ISC11) | (1 << ISC10);
-	
-    DDRB = (1 << PINB3) | (1 << PINB5);													//output pin for LED
-    DDRB &= ~(1 << PINB0);													//input pin for IR sensor
-    TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);	
-    TCCR2B |= (1 << WGM22) | (1 << CS20);									
-    OCR2A = 210;															//approximately every 26 microseconds
-    TIMSK2 |= (1 << OCIE2A);												//enable timer compare match interupt
-    sei();
+    initpoep();
 
      Serial.begin(9600);
      Serial.println("Starting...");
@@ -54,6 +42,22 @@ void sendZero(){
 void sendOne(){
 	
 }
+
+void initpoep(){
+	cli();
+	
+	PCICR |= (1 << PCIE0);
+	PCMSK0 |= (1<< PCINT0);
+	EICRA = (1 << ISC11) | (1 << ISC10);
+	
+	DDRB = (1 << PINB3) | (1 << PINB5);													//output pin for LED
+	DDRB &= ~(1 << PINB0);													//input pin for IR sensor
+	TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
+	TCCR2B |= (1 << WGM22) | (1 << CS20);
+	OCR2A = 210;															//approximately every 26 microseconds
+	TIMSK2 |= (1 << OCIE2A);												//enable timer compare match interupt
+	sei();
+} 
 
 // void sendZero(){								//sends a zero by turning of the LED for approximately 60 microseconds
 //     DDRB |= (1 << PINB3);
