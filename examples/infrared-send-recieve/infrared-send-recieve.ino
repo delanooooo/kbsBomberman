@@ -47,28 +47,36 @@ ISR(PCINT0_vect){
 	sensor++;
 }
 
-void sendZero(){								//sends a zero by turning of the LED for approximately 60 microseconds
-    DDRB |= (1 << PINB3);
-    timer = 0;
-	while(timer < 3){
-	}
-    while(timer > 3){
-        DDRB |= (1 << PINB3);
-		//timer = 0;
-        Serial.println("You sent a zero");
-// 		while(timer < 1){
-// 		}
-    }
-}
+void sendZero(){
 	
-void sendOne(){									//sends a one by turning of the LED for approximately 120 microseconds
-	 DDRB ^= (1 << PINB3);
-	 timer = 0;
-	 while(timer > 6){
-		 DDRB ^= (1 << PINB3);
-		 timer = 0;
-// 		 /*Serial.println("You sent a one");*/
-		 while(timer < 1){
-		 }
-	 }
 }
+
+void sendOne(){
+	
+}
+
+// void sendZero(){								//sends a zero by turning of the LED for approximately 60 microseconds
+//     DDRB |= (1 << PINB3);
+//     timer = 0;
+// 	while(timer < 3){
+// 	}
+//     while(timer > 3){
+//         DDRB |= (1 << PINB3);
+// 		//timer = 0;
+//         Serial.println("You sent a zero");
+// // 		while(timer < 1){
+// // 		}
+//     }
+// }
+	
+// void sendOne(){									//sends a one by turning of the LED for approximately 120 microseconds
+// 	 DDRB ^= (1 << PINB3);
+// 	 timer = 0;
+// 	 while(timer > 6){
+// 		 DDRB ^= (1 << PINB3);
+// 		 timer = 0;
+// // 		 /*Serial.println("You sent a one");*/
+// 		 while(timer < 1){
+// 		 }
+// 	 }
+// }
