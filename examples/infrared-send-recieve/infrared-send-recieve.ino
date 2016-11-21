@@ -2,21 +2,18 @@
 #include <util/delay.h>
 #include <Arduino.h>
 
+void own_init();
 void sendZero();
 uint16_t sensor = 0x00;
 
 uint16_t timer = 0;
 int main(void) {
-    initpoep();
+    own_init();
 
      Serial.begin(9600);
      Serial.println("Starting...");
 
     for(;;) {
-        //    uint8_t rec;
-        //   rec = PINB & (1 << PINB0);
-        //  Serial.println(rec);
-/*        Serial.println(time);*/
 
 		Serial.println(sensor);
 		Serial.println(timer);
@@ -27,30 +24,23 @@ int main(void) {
     }
 }
 
-ISR(TIMER2_COMPA_vect) {
-    timer++;
-}
-
-ISR(PCINT0_vect){
-	sensor++;
-}
-
 void sendZero(){
-	
+	timer = 0;
+	DDRB |= (1 << PINB3);
 }
 
 void sendOne(){
 	
 }
 
-void initpoep(){
+void own_init(){
 	cli();
 	
 	PCICR |= (1 << PCIE0);
 	PCMSK0 |= (1<< PCINT0);
 	EICRA = (1 << ISC11) | (1 << ISC10);
 	
-	DDRB = (1 << PINB3) | (1 << PINB5);													//output pin for LED
+	DDRB = (1 << PINB3) | (1 << PINB5);										//output pin for LED
 	DDRB &= ~(1 << PINB0);													//input pin for IR sensor
 	TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
 	TCCR2B |= (1 << WGM22) | (1 << CS20);
@@ -58,6 +48,14 @@ void initpoep(){
 	TIMSK2 |= (1 << OCIE2A);												//enable timer compare match interupt
 	sei();
 } 
+
+ISR(TIMER2_COMPA_vect) {
+	timer++;
+}
+ISR(PCINT0_vect){
+	sensor++;
+}
+
 
 // void sendZero(){								//sends a zero by turning of the LED for approximately 60 microseconds
 //     DDRB |= (1 << PINB3);
