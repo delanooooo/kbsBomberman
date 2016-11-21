@@ -2,6 +2,8 @@
 #include <util/delay.h>
 //#include <Arduino.h>
 
+void sendZero();
+
 uint16_t time = 0;
 int main(void) {
     //    init();
@@ -19,9 +21,12 @@ int main(void) {
     Serial.println(1);
 
     for(;;) {
-        uint8_t rec;
-        rec = PINB & (1 << PINB0);
-        Serial.println(rec);
+    //    uint8_t rec;
+     //   rec = PINB & (1 << PINB0);
+      //  Serial.println(rec);
+
+      sendZero();
+      _delay_ms(3000);
     }
 }
 
@@ -29,10 +34,10 @@ ISR(TIMER2_COMPA_vect) {
     time++;
 }
 
-sendZero(){
-	DDRB &= ~(1 << PINB3);
+void sendZero(){
+	DDRB ^= (1 << PINB3);
 	time = 0;
-	if(time = 3){
-		DDRB |= (1 << PINB3);
+	if(time == 3){
+		DDRB ^= (1 << PINB3);
 	}
 }
