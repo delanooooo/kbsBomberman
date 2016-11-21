@@ -2,7 +2,7 @@
 #include <util/delay.h>
 //#include <Arduino.h>
 
-uint16_t millisecond = 0;
+uint16_t time = 0;
 int main(void) {
     //    init();
 
@@ -24,13 +24,15 @@ int main(void) {
         Serial.println(rec);
     }
 }
-/*
-ISR(TIMER2_OVF_vect) {
-    millisecond++;
-    if(millisecond > 26) {
-        DDRB &= ~(1 << PINB3);
-    }
+
+ISR(TIMER2_COMPA_vect) {
+    time++;
 }
-*/
-//int timer(){
-//}
+
+sendZero(){
+	DDRB &= ~(1 << PINB3);
+	time = 0;
+	if(time = 3){
+		DDRB |= (1 << PINB3);
+	}
+}
