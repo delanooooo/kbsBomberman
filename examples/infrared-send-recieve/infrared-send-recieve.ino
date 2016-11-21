@@ -2,16 +2,12 @@
 #include <util/delay.h>
 #include <Arduino.h>
 
-uint16_t count = 0;
+uint16_t millisecond = 0;
 int main(void) {
     //    init();
 
     cli();
-    DDRB |= (1 << PINB3);
-    DDRB &= ~(1 << PINB0);
-    TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-    TCCR2B |= (1 << CS20); 
-    OCR2A = 16;
+    timer();
     sei();
 
     Serial.begin(9600);
@@ -25,10 +21,16 @@ int main(void) {
 }
 
 ISR(TIMER2_OVF_vect) {
-    count++;
-    if(count > 183) {
+    millisecond++;
+    if(millisecond > 26) {
         DDRB &= ~(1 << PINB3);
     }
 }
 
-
+int timer(){
+	DDRB |= (1 << PINB3);
+	DDRB &= ~(1 << PINB0);
+	TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
+	TCCR2B |= (1 << CS20);
+	OCR2A = 16;
+}
