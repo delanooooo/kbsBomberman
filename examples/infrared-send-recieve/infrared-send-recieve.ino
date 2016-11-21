@@ -10,8 +10,8 @@ int main(void) {
     DDRB |= (1 << PINB3);
     DDRB &= ~(1 << PINB0);
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-    TCCR2B |= (1 << WGM22) | (1 << CS20); // prescaler 1024
-    OCR2A = 210;
+    TCCR2B |= (1 << CS20); 
+    OCR2A = 16;
     sei();
 
     Serial.begin(9600);
@@ -30,3 +30,5 @@ ISR(TIMER2_OVF_vect) {
         DDRB &= ~(1 << PINB3);
     }
 }
+
+
