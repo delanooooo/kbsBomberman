@@ -1,6 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include 
+#include <Arduino.h>
 
 uint16_t count = 0;
 int main(void) {
