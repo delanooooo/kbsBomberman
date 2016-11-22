@@ -4,7 +4,6 @@
 
 int number = 0;
 uint8_t sensor = 0x00;
-uint8_t niks = 0;
 int main(void){
 	own_init();
 	Serial.println("Starting...");
@@ -13,10 +12,12 @@ int main(void){
 		if(sensor > 0){
 			number++;
 			Serial.print(number);
-			Serial.println("SIGNAAAAl");	
+			Serial.println("  SIGNAAAAl");	
 		}
 	}	
 }
+
+
 
 void own_init(){
 	sei();
@@ -26,5 +27,5 @@ void own_init(){
 	Serial.begin(9600);
 }
 ISR(PCINT0_vect){
-	sensor ^= (1 << 0);
+	sensor = PINB & (1<<PINB0);
 }
