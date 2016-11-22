@@ -16,7 +16,10 @@ int main(void) {
     _delay_ms(3000);
 
     for(;;) {
+		_delay_ms(1000);
         sendZero();
+// 		_delay_ms(1000);
+// 		sendOne();
     }
 }
 
@@ -30,15 +33,19 @@ ISR(PCINT0_vect) {
 
 void sendZero(){                             
     DDRB &= ~(1 << PINB3); // Turn IR led off
-    while(timer > 3){
-        DDRB |= (1 << PINB3);
-        PORTB |= (1 << PINB5);
-        timer = 0;
-    }
+	_delay_us(65);
+	DDRB |= (1 << PINB3);
+//     while(timer > 3){
+//         DDRB |= (1 << PINB3);
+//         PORTB |= (1 << PINB5);
+//         timer = 0;
+//     }
 }
 
 void sendOne() {
-
+	DDRB &= ~(1 << PINB3); // Turn IR led off
+	_delay_us(120);
+	DDRB |= (1 << PINB3);
 }
 
 void own_init() {
