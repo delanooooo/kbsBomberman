@@ -16,8 +16,17 @@ int main(void){
     led2();
     Serial.println("Starting...");
     while(1){
+		if(sensor > 0){
+			timer1 = 0;
+			Serial.println(sensor);
+			while(!sensor) {
+				sensor = PINB & (1<<PINB0);
+			}
+			measuredTime = timer1;
+		}
         if(measuredTime > 0) led1();
         else led2();
+		measuredTime = 0;
     }
 }	
 
@@ -30,7 +39,6 @@ void led2(){
     PORTB &= ~(1 << PINB1);
     PORTB &= ~(1 << PINB2);
     PORTB |= (1 << PINB2);
-    _delay_ms(500);
 }
 
 void own_init(){
@@ -42,18 +50,14 @@ void own_init(){
 
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
     TCCR2B |= (1 << WGM22) | (1 << CS21);
-    OCR2A = 45; 
+    OCR2A = 30; 
     TIMSK2 |= (1 << OCIE2A);
     Serial.begin(9600);
     sei();
 }
 ISR(PCINT0_vect){
     sensor = PINB & (1<<PINB0);
-    timer1 = 0;
-    while(!sensor) {
-        sensor = PINB & (1<<PINB0);
-    }
-    measuredTime = timer1;
+    
 }
 ISR(TIMER2_COMPA_vect){
     timer1++;
