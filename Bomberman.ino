@@ -144,56 +144,16 @@ void loop() {
 
         if (joyX < 100)//to the left
         {
-            if (levelGrid[playLocY][playLocX - 1] == WALL || levelGrid[playLocY][playLocX - 1] == BARREL || levelGrid[playLocY][playLocX - 1] == BOMB) {
-            } else {
-                if (levelGrid[playLocY][playLocX] == BOMB) {
-                } else {
-                    levelGrid[playLocY][playLocX] = EMPTY;
-                    drawEmpty();
-                }
-                levelGrid[playLocY][playLocX - 1] = PLAYER;
-                playLocX -= 1;
-                drawPlayer();
-            }
+            walkLeft();
         } else if (joyX > 160) // to the right
         {
-            if (levelGrid[playLocY][playLocX + 1] == WALL || levelGrid[playLocY][playLocX + 1] == BARREL || levelGrid[playLocY][playLocX + 1] == BOMB) {
-            } else {
-                if (levelGrid[playLocY][playLocX] == BOMB) {
-                } else {
-                    levelGrid[playLocY][playLocX] = EMPTY;
-                    drawEmpty();
-                }
-                levelGrid[playLocY][playLocX + 1] = PLAYER;
-                playLocX += 1;
-                drawPlayer();
-            }
+           walkRight(); 
         } else if (joyY > 160)// to the top
         {
-            if (levelGrid[playLocY - 1][playLocX] == WALL || levelGrid[playLocY - 1][playLocX] == BARREL || levelGrid[playLocY - 1][playLocX] == BOMB) {
-            } else {
-                if (levelGrid[playLocY][playLocX] == BOMB) {
-                } else {
-                    levelGrid[playLocY][playLocX] = EMPTY;
-                    drawEmpty();
-                }
-                levelGrid[playLocY - 1][playLocX] = PLAYER;
-                playLocY -= 1;
-                drawPlayer();
-            }
+            walkUp();
         } else if (joyY < 100) // to the bottom
         {
-            if (levelGrid[playLocY + 1][playLocX] == WALL || levelGrid[playLocY + 1][playLocX] == BARREL || levelGrid[playLocY + 1][playLocX] == BOMB) {
-            } else {
-                if (levelGrid[playLocY][playLocX] == BOMB) {
-                } else {
-                    levelGrid[playLocY][playLocX] = EMPTY;
-                    drawEmpty();
-                }
-                levelGrid[playLocY + 1][playLocX] = PLAYER;
-                playLocY += 1;
-                drawPlayer();
-            }
+            walkDown();
         }
 
         //          Serial.print(playLocX);
@@ -241,3 +201,60 @@ void placeBomb() {
 void drawExplosion() {
     lcd.fillRect(bombLocX * 21 + 4, bombLocY * 21 + 5, 21, 21, RGB(200, 200, 0));
 }
+
+void walkLeft(){
+  if (levelGrid[playLocY][playLocX - 1] == WALL || levelGrid[playLocY][playLocX - 1] == BARREL || levelGrid[playLocY][playLocX - 1] == BOMB) {
+            } else {
+                if (levelGrid[playLocY][playLocX] == BOMB) {
+                } else {
+                    levelGrid[playLocY][playLocX] = EMPTY;
+                    drawEmpty();
+                }
+                levelGrid[playLocY][playLocX - 1] = PLAYER;
+                playLocX -= 1;
+                drawPlayer();
+            }
+}
+
+void walkRight(){
+  if (levelGrid[playLocY][playLocX + 1] == WALL || levelGrid[playLocY][playLocX + 1] == BARREL || levelGrid[playLocY][playLocX + 1] == BOMB) {
+            } else {
+                if (levelGrid[playLocY][playLocX] == BOMB) {
+                } else {
+                    levelGrid[playLocY][playLocX] = EMPTY;
+                    drawEmpty();
+                }
+                levelGrid[playLocY][playLocX + 1] = PLAYER;
+                playLocX += 1;
+                drawPlayer();
+            }
+}
+
+void walkDown(){
+  if (levelGrid[playLocY + 1][playLocX] == WALL || levelGrid[playLocY + 1][playLocX] == BARREL || levelGrid[playLocY + 1][playLocX] == BOMB) {
+            } else {
+                if (levelGrid[playLocY][playLocX] == BOMB) {
+                } else {
+                    levelGrid[playLocY][playLocX] = EMPTY;
+                    drawEmpty();
+                }
+                levelGrid[playLocY + 1][playLocX] = PLAYER;
+                playLocY += 1;
+                drawPlayer();
+            }
+}
+
+void walkUp(){
+  if (levelGrid[playLocY - 1][playLocX] == WALL || levelGrid[playLocY - 1][playLocX] == BARREL || levelGrid[playLocY - 1][playLocX] == BOMB) {
+            } else {
+                if (levelGrid[playLocY][playLocX] == BOMB) {
+                } else {
+                    levelGrid[playLocY][playLocX] = EMPTY;
+                    drawEmpty();
+                }
+                levelGrid[playLocY - 1][playLocX] = PLAYER;
+                playLocY -= 1;
+                drawPlayer();
+            }
+}
+
