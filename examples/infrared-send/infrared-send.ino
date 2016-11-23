@@ -58,8 +58,8 @@ void own_init() {
     DDRB = (1 << PINB3) | (1 << PINB5); //output pin for LED
     DDRB &= ~(1 << PINB0); //input pin for IR sensor
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-    TCCR2B |= (1 << WGM22) | (1 << CS20);
-    OCR2A = 210; //approximately every 26 microseconds
+    TCCR2B |= (1 << WGM22) | (1 << CS21);
+    OCR2A = 26; //approximately every 26 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable timer compare match interupt
     sei();
 }
