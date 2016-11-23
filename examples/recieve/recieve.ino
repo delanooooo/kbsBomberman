@@ -6,9 +6,8 @@ void led1();
 void led2();
 void own_init();
 
-int measuredTime;
-int number = 0;
-uint8_t timer2 = 0;
+uint8_t measuredTime;
+uint8_t number = 0;
 uint8_t timer1 = 0;
 uint8_t sensor = 0x00;
 int main(void){
@@ -17,14 +16,19 @@ int main(void){
     led2();
     Serial.println("Starting...");
     while(1){
-        Serial.println(measuredTime);
-        if (measuredTime == 1){
-            Serial.println("0 Ontvangen");
-            led1();
-        } else if(measuredTime == 2){
-            Serial.println("1 Ontvangen");
-            led2();
-        }
+		
+			if(sensor > 0){
+				PORTB |= (1 << PINB2);
+				PORTB &= ~(1 << PINB1);
+			} else{
+				PORTB |= (1 << PINB1);
+				PORTB &= ~(1 << PINB2);
+			}
+//         if (measuredTime == 1){
+//             led1();
+//         } else if(measuredTime == 2){
+//             led2();
+//         }
     }	
 }
 
@@ -48,9 +52,8 @@ void own_init(){
 
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
     TCCR2B |= (1 << WGM22) | (1 << CS21);
-    OCR2A = 90; 
-    OCR2B = 45;
-    TIMSK2 |= (1 << OCIE2A) | (1 << OCIE2B);
+    OCR2A = 45; 
+    TIMSK2 |= (1 << OCIE2A);
     Serial.begin(9600);
     sei();
 }
@@ -65,7 +68,4 @@ ISR(PCINT0_vect){
 }
 ISR(TIMER2_COMPA_vect){
     timer1++;
-}
-ISR(TIMER2_COMPB_vect){
-    timer2++;
 }
