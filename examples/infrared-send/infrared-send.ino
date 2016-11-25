@@ -2,7 +2,10 @@
 #include <util/delay.h>
 #include <Arduino.h>
 
+#define SWITCH 100
+
 void sendZero();
+void sendOne();
 void own_init();
 
 uint16_t sensor = 0x00;
@@ -16,10 +19,12 @@ int main(void) {
     _delay_ms(3000);
 
     for(;;) {
-		_delay_ms(1000);
+		_delay_ms(SWITCH);
         sendZero();
-// 		_delay_ms(1000);
-// 		sendOne();
+        PORTB &= ~(1 << PINB5);
+ 		_delay_ms(SWITCH);
+ 		sendOne();
+        PORTB |= (1 << PINB5);
     }
 }
 
@@ -33,7 +38,7 @@ ISR(PCINT0_vect) {
 
 void sendZero(){                             
     DDRB &= ~(1 << PINB3); // Turn IR led off
-	_delay_us(65);
+	_delay_us(39);
 	DDRB |= (1 << PINB3);
 //     while(timer > 3){
 //         DDRB |= (1 << PINB3);
@@ -44,7 +49,7 @@ void sendZero(){
 
 void sendOne() {
 	DDRB &= ~(1 << PINB3); // Turn IR led off
-	_delay_us(120);
+	_delay_us(182);
 	DDRB |= (1 << PINB3);
 }
 
