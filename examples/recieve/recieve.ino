@@ -42,6 +42,16 @@ void led2(){
     PORTB |= (1 << PINB2);
 }
 
+void readValue(){
+	if(measuredTime > 101 && measuredTime < 160){
+		PORTB |= (1 << PINB2);
+		PORTB &= ~(1 << PINB1);
+		} else if(measuredTime < 101){
+		PORTB |= (1 << PINB1);
+		PORTB &= ~(1 << PINB2);
+	}
+}
+
 void IR_setup(){
     cli();
     DDRB = (1 << PORTB2) | (1 << PORTB1);
@@ -59,16 +69,9 @@ ISR(PCINT0_vect){
     sensor = PINB & (1<<PINB0);
 	if(sensor > 0){
 		timer1 = 0;
-	}
-	if(!sensor){
+	} else {
 		measuredTime = timer1;
-		if(measuredTime <= 101){
-			PORTB |= (1 << PINB1);
-			PORTB &= ~(1 << PINB2);
-			} else if(measuredTime > 101 && measuredTime < 160){
-			PORTB |= (1 << PINB2);
-			PORTB &= ~(1 << PINB1);
-		}
+		readValue();
 	}
 }
 ISR(TIMER2_COMPA_vect){
