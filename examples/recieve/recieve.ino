@@ -12,7 +12,7 @@ uint8_t number = 0;
 uint8_t timer1 = 0;
 uint8_t sensor = 0x00;
 int main(void){
-    own_init();
+    IR_setup();
     led1();
     led2();
     Serial.println("Starting...");
@@ -42,7 +42,7 @@ void led2(){
     PORTB |= (1 << PINB2);
 }
 
-void own_init(){
+void IR_setup(){
     cli();
     DDRB = (1 << PORTB2) | (1 << PORTB1);
     PCICR |= (1 << PCIE0);
@@ -53,7 +53,6 @@ void own_init(){
     TCCR2B |= (1 << WGM22) | (1 << CS21);
     OCR2A = 5; 
     TIMSK2 |= (1 << OCIE2A);
-    Serial.begin(9600);
     sei();
 }
 ISR(PCINT0_vect){
