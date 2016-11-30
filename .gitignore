@@ -3,11 +3,9 @@ examples/infrared-send-recieve/Debug/board.buildinfo
 examples/infrared-send-recieve/Debug/infrared-send-recieve.hex
 *.elf
 examples/infrared-send-recieve/Debug/infrared-send-recieve.ino.hex
-*.xml
 examples/recieve/recieve.cppproj
 *.hex
 examples/recieve/Debug/recieve.cpp.o
-*.h
 examples/recieve/Debug/recieve.cpp.d
 *.d
 examples/infrared-send/Debug/infrared-send.cpp.o
