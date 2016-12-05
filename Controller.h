@@ -24,6 +24,7 @@ struct Bomb{
 	int x;
 	int y;
 	int countdown;
+	struct Bomb *next;
 };
 
 struct Bomberman{
@@ -32,7 +33,7 @@ struct Bomberman{
 	int bombRadius;
 	int bombMaxAmount;
 	int bombsPlaced;
-	Bomb bombs[10];
+	struct Bomb *head;
 }player1, player2;
 
 typedef enum {
@@ -71,8 +72,14 @@ void walkLeft(Bomberman *player);
 void walkRight(Bomberman *player);
 void walkUp(Bomberman *player);
 void debugMap();
+void drawTime();
+
+uint16_t timer;
+uint8_t secondsTimer = 110;
 
 void initController() {
+
+
 	nunchuck_setpowerpins();
 	nunchuck_init(); // send the initilization
 
@@ -83,6 +90,12 @@ void initController() {
 	Serial.begin(9600);
 	/////////////////////////////////////////////////////////////////////////////////////
 	lcd.fillRect(240, 5, 76, 231, RGB(0, 0, 0));
+
+	//init timer
+	TCCR0A = (1 << COM0A0) | (1 << WGM01);
+	TCCR0B = (1 << CS02) | (1 << CS00);//1024 prescale
+	OCR0A = 156; //approximately every 10 microseconds
+	TIMSK0 |= (1 << OCIE0A); //enable timer compare match interupt
 
 	BombermanInit();//init player1 & player2
 
@@ -129,6 +142,7 @@ void initController() {
 //  drawExplosion();
 //}
 
+
 void gameLoop() {
 	while(1){
 		nunchuck_get_data();
@@ -171,6 +185,7 @@ void gameLoop() {
 
 		checkExplosions(&player1);
 		checkExplosions(&player2);
+
 	}
 }
 
@@ -198,9 +213,17 @@ void placeBomb(Bomberman *player) {
 			levelGrid[player->y][player->x] = BOMB;
 			lcd.fillRect(player->x * blockSize + 4, player->y * blockSize + 5, blockSize, blockSize, RGB(200, 200, 0));
 			
-			player->bombs[player->bombsPlaced].x = player->x;
-			player->bombs[player->bombsPlaced].y = player->y;
-			player->bombs[player->bombsPlaced].countdown = 100;
+			struct Bomb *current = player->head;
+			while (current->next != NULL) {
+				current = current->next;
+			}
+
+			struct Bomb *temp = (struct Bomb*)malloc(sizeof(struct Bomb));
+			temp->x = player->x;
+			temp->y = player->y;
+			temp->countdown = 100;
+			temp->next = NULL;
+			current->next = temp;
 
 			player->bombsPlaced += 1;
 		}
@@ -208,16 +231,26 @@ void placeBomb(Bomberman *player) {
 }
 
 void checkExplosions(Bomberman *player){
-	for(int i = 0; i < player->bombsPlaced;i++){
-		player->bombs[i].countdown--;
-		Serial.println(player->bombs[i].countdown);
-		if(player->bombs[i].countdown <= 0){
-			drawExplosion(&player->bombs[i]);
-			levelGrid[player->bombs[i].y][player->bombs[i].x] = EMPTY;
-			//Serial.print(player->bombs[i].y);
-			//Serial.println(player->bombs[i].x);
-			player->bombsPlaced--;
+
+	struct Bomb *current = player->head->next;
+	struct Bomb *prev = player->head;
+	while (current != NULL) {
+
+		current->countdown--;
+		//Serial.println(current->countdown);
+		
+		if (current->countdown <= 0) {
+			drawExplosion(current);
+			levelGrid[current->y][current->x] = EMPTY;
+			prev->next = current->next;
 			
+			free(current);
+			current = prev->next;
+			player->bombsPlaced--;
+		}
+		else {
+			prev = current;
+			current = current->next;
 		}
 	}
 }
@@ -231,13 +264,21 @@ void BombermanInit(){
 	player1.x = 1;
 	player1.y = 1;
 	player1.bombRadius = 2;
-	player1.bombMaxAmount = 1;
+	player1.bombMaxAmount = 10;
 	player1.bombsPlaced = 0;
+	struct Bomb *ptr = (struct Bomb*)malloc(sizeof(struct Bomb));
+	player1.head = ptr;
+	player1.head->next = NULL;
+
+
 	player2.x = 9;
 	player2.y = 9;
 	player2.bombRadius = 2;
-	player2.bombMaxAmount = 1;
+	player2.bombMaxAmount = 10;
 	player2.bombsPlaced = 0;
+	struct Bomb *ptr2 = (struct Bomb*)malloc(sizeof(struct Bomb));
+	player2.head = ptr2;
+	player2.head->next = NULL;
 }
 
 
@@ -301,4 +342,25 @@ void debugMap(){
 			}
 			Serial.println("");
 		}
+}
+
+void drawTime(){
+	lcd.setTextColor(RGB(255,255,255), RGB(0,0,0));
+	lcd.setCursor(245, 50);
+	lcd.print("Time:");
+	lcd.setCursor(285, 50);
+
+	if(secondsTimer == 99){
+		lcd.fillRect(285,50,30,10,RGB(0,0,0));
+	}
+
+	lcd.println(secondsTimer);
+}
+
+ISR(TIMER0_COMPA_vect){
+	timer++;
+	if(timer % 100 == 0){
+		secondsTimer--;
+		drawTime();
+	}
 }
