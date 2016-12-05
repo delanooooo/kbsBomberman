@@ -11,4 +11,8 @@ examples/recieve/Debug/recieve.cpp.d
 examples/infrared-send/Debug/infrared-send.cpp.o
 *.cppproj
 examples/infrared-send/Debug/board.buildinfo
-examples/recieve/Debug/board.buildinfo
+examples/recieve/Debug/board.buildinfoexamples/recieve/Debug/board.buildinfo
+examples/recieve/__vm/Upload.vmps.xml
+*.xml
+examples/infrared-send-recieve/__vm/.infrared-send-recieve.vsarduino.h
+*.h
