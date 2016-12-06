@@ -2,22 +2,20 @@
 #include <util/delay.h>
 #include <Arduino.h>
 
-#define SWITCH 100
+#define SWITCH 500
 
 void sendZero();
 void sendOne();
-void own_init();
+void ir_setup();
 
-uint16_t sensor = 0x00;
-uint16_t timer = 0;
+volatile uint16_t sensor = 0x00;
+volatile uint16_t timer = 0;
+volatile uint16_t timer2 = 0;
+volatile uint16_t squarewave_timer = 0;
 
 int main(void) {
-    own_init();
-
     Serial.begin(9600);
-    Serial.println("Starting...");
-    _delay_ms(3000);
-
+    ir_setup();
     for(;;) {
 		_delay_ms(SWITCH);
         sendZero();
@@ -32,19 +30,19 @@ ISR(TIMER2_COMPA_vect) {
     timer++;
 }
 
+ISR(TIMER2_COMPB_vect) {
+    timer2++;
+    Serial.println(timer2);
+    if(squarewave_timer > timer2) DDRB |= (1 << PINB3);
+}
+
 ISR(PCINT0_vect) {
     sensor++;
 }
 
 void sendZero(){                             
     DDRB &= ~(1 << PINB3); // Turn IR led off
-	_delay_us(39);
-	DDRB |= (1 << PINB3);
-//     while(timer > 3){
-//         DDRB |= (1 << PINB3);
-//         PORTB |= (1 << PINB5);
-//         timer = 0;
-//     }
+    squarewave_timer = timer2 + 5;
 }
 
 void sendOne() {
@@ -53,7 +51,7 @@ void sendOne() {
 	DDRB |= (1 << PINB3);
 }
 
-void own_init() {
+void ir_setup() {
     cli();
 
     PCICR |= (1 << PCIE0);
@@ -64,7 +62,8 @@ void own_init() {
     DDRB &= ~(1 << PINB0); //input pin for IR sensor
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
     TCCR2B |= (1 << WGM22) | (1 << CS21);
-    OCR2A = 26; //approximately every 26 microseconds
+    OCR2A = 0x1A; //approximately every 26 microseconds
+    OCR2B = 16; //approximately every 26 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable timer compare match interupt
     sei();
 }
