@@ -354,7 +354,7 @@ void checkCollision(Bomberman *player) {
 			player->state = TRUE;
 			player->invinsibleTimer = timer;
 		}
-		if (timer >= player->invinsibleTimer + 3000) {
+		if (timer >= player->invinsibleTimer + 300) {
 			player->state = FALSE;
 		}
 	}
