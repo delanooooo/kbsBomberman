@@ -16,3 +16,5 @@ examples/recieve/__vm/Upload.vmps.xml
 *.xml
 examples/infrared-send-recieve/__vm/.infrared-send-recieve.vsarduino.h
 *.h
+kbsBomberman.atsln
+*.atsuo

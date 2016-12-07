@@ -106,16 +106,16 @@ void initController() {
 		//row
 		for (int x = 0; x < 11; x++) {
 			if (levelGrid[x][y] == WALL) {
-					drawWall(pixelPosX,pixelPosY);
+				drawWall(pixelPosX,pixelPosY);
 				} else if (levelGrid[x][y] == BARREL) {
-					drawBarrel(pixelPosX,pixelPosY);
+				drawBarrel(pixelPosX,pixelPosY);
 				} else if (levelGrid[x][y] == BOMB) {
-					placeBomb(&player1);
+				placeBomb(&player1);
 				} else if (x == player1.x && y == player1.y) {
-					drawPlayer(&player1);
+				drawPlayer(&player1);
 				} else if (x == player2.x && y == player2.y){
-					drawPlayer(&player2);
-				}
+				drawPlayer(&player2);
+			}
 			pixelPosY += blockSize;
 		}
 		pixelPosY = 5;
@@ -335,13 +335,13 @@ void walkUp(Bomberman *player){
 }
 
 void debugMap(){
-		for (int y = 0; y < 11; y++) {
-			for (int x = 0; x < 11; x++) {
-				Serial.print(levelGrid[y][x]);
-				Serial.print(" | ");
-			}
-			Serial.println("");
+	for (int y = 0; y < 11; y++) {
+		for (int x = 0; x < 11; x++) {
+			Serial.print(levelGrid[y][x]);
+			Serial.print(" | ");
 		}
+		Serial.println("");
+	}
 }
 
 void drawTime(){
