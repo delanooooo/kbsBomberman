@@ -334,6 +334,10 @@ void walkUp(Bomberman *player){
 	}
 }
 
+
+
+
+
 void debugMap(){
 	for (int y = 0; y < 11; y++) {
 		for (int x = 0; x < 11; x++) {
