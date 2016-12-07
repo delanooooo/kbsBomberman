@@ -27,6 +27,8 @@ struct Bomb{
 	struct Bomb *next;
 };
 
+	typedef enum { FALSE, TRUE } bool;
+
 struct Bomberman{
 	int x;
 	int y;
@@ -34,10 +36,13 @@ struct Bomberman{
 	int bombMaxAmount;
 	int bombsPlaced;
 	struct Bomb *head;
+	bool state;
+	int deaths = 0;
+	uint16_t invinsibleTimer = 0;
 }player1, player2;
 
 typedef enum {
-	EMPTY, WALL, BARREL, PLAYER, BOMB
+	EMPTY, WALL, BARREL, PLAYER, BOMB, EXPLOSION
 } object;
 
 object levelGrid[11][11] = {
@@ -62,6 +67,7 @@ void gameLoop();
 void drawBarrel(int x, int y);
 void drawEmpty(Bomberman *player);
 void checkExplosions(Bomberman *player);
+void checkCollision(Bomberman *player);
 void drawExplosion(Bomb *b);
 void drawPlayer(Bomberman *player);
 void drawWall(int x, int y);
@@ -279,11 +285,14 @@ void BombermanInit(){
 	struct Bomb *ptr2 = (struct Bomb*)malloc(sizeof(struct Bomb));
 	player2.head = ptr2;
 	player2.head->next = NULL;
+	
+	player1.state = FALSE;
+	player2.state = FALSE;
 }
 
 
 void walkLeft(Bomberman *player){
-	if (levelGrid[player->y][player->x - 1] == EMPTY) {
+	if (levelGrid[player->y][player->x - 1] == EMPTY || levelGrid[player->y][player->x - 1] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
 			} else {
 			levelGrid[player->y][player->x] = EMPTY;
@@ -292,11 +301,12 @@ void walkLeft(Bomberman *player){
 		levelGrid[player->y][player->x - 1] = PLAYER;
 		player->x -= 1;
 		drawPlayer(player);
+		checkCollision(player);
 	}
 }
 
 void walkRight(Bomberman *player){
-	if (levelGrid[player->y][player->x + 1] == EMPTY) {
+	if (levelGrid[player->y][player->x + 1] == EMPTY || levelGrid[player->y][player->x + 1] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
 			} else {
 			levelGrid[player->y][player->x] = EMPTY;
@@ -305,11 +315,12 @@ void walkRight(Bomberman *player){
 		levelGrid[player->y][player->x + 1] = PLAYER;
 		player->x += 1;
 		drawPlayer(player);
+		checkCollision(player);
 	}
 }
 
 void walkDown(Bomberman *player){
-	if (levelGrid[player->y + 1][player->x] == EMPTY) {
+	if (levelGrid[player->y + 1][player->x] == EMPTY || levelGrid[player->y + 1][player->x] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
 			} else {
 			levelGrid[player->y][player->x] = EMPTY;
@@ -318,11 +329,12 @@ void walkDown(Bomberman *player){
 		levelGrid[player->y + 1][player->x] = PLAYER;
 		player->y += 1;
 		drawPlayer(player);
+		checkCollision(player);
 	}
 }
 
 void walkUp(Bomberman *player){
-	if (levelGrid[player->y - 1][player->x] == EMPTY) {
+	if (levelGrid[player->y - 1][player->x] == EMPTY || levelGrid[player->y - 1][player->x] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
 			} else {
 			levelGrid[player->y][player->x] = EMPTY;
@@ -331,10 +343,22 @@ void walkUp(Bomberman *player){
 		levelGrid[player->y - 1][player->x] = PLAYER;
 		player->y -= 1;
 		drawPlayer(player);
+		checkCollision(player);
 	}
 }
 
-
+void checkCollision(Bomberman *player) {
+	if (levelGrid[player->y][player->x] == EXPLOSION) {
+		if (player->state == FALSE) {
+			player->deaths++;
+			player->state = TRUE;
+			player->invinsibleTimer = timer;
+		}
+		if (timer >= player->invinsibleTimer + 3000) {
+			player->state = FALSE;
+		}
+	}
+}
 
 
 
