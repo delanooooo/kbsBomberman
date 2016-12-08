@@ -24,8 +24,12 @@ volatile uint16_t spacetimer = 0;
 int main(void) {
         ir_setup();
         _delay_ms(500);
+        sendOne(); sendOne(); sendOne(); sendOne(); sendOne(); sendOne(); 
         PORTB ^= (1 << PINB5);
-        for(uint8_t i = 0x00; i < 0xFF; i++){
+        for(uint8_t i = 0x41; i <= 0x5A; i++){
+            sendData(i);
+        }
+        for(uint8_t i = 0x61; i <= 0x7A; i++){
             sendData(i);
         }
         PORTB &= ~(1 << PINB5);
@@ -46,7 +50,7 @@ ISR(PCINT0_vect) {
 
 void sendData(uint8_t data){
     sendStart(); _delay_us(BIT_SPACE);
-    for(uint8_t mask = 1UL << 7;mask;mask >>= 1){
+    for(uint8_t mask = 0x01 << 7;mask;mask >>= 1){
         if(mask & data) {
             sendOne();  _delay_us(BIT_SPACE);
         } else { 
