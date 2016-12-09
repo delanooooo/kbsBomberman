@@ -56,17 +56,17 @@ typedef enum {
 } object;
 
 object levelGrid[levelSize][levelSize] = {
-	{WALL, WALL,   WALL,  WALL,  WALL,  WALL,  WALL,  WALL,  WALL,  WALL,   WALL},
-	{WALL, PLAYER, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,  WALL},
-	{WALL, EMPTY,  WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY,  WALL},
-	{WALL, EMPTY,  EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,  WALL},
-	{WALL, EMPTY,  WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY,  WALL},
-	{WALL, EMPTY,  EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,  WALL},
-	{WALL, EMPTY,  WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY,  WALL},
-	{WALL, EMPTY,  EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,  WALL},
-	{WALL, EMPTY,  WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY, WALL,  EMPTY,  WALL},
-	{WALL, EMPTY,  EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, PLAYER, WALL},
-	{WALL, WALL,   WALL,  WALL,  WALL,  WALL,  WALL,  WALL,  WALL,  WALL,   WALL}
+	    {WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL},
+	    {WALL, PLAYER, EMPTY,  EMPTY,  BARREL, BARREL, EMPTY,  EMPTY,  BARREL, EMPTY,  WALL},
+	    {WALL, EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL,   BARREL, WALL},
+	    {WALL, BARREL, BARREL, BARREL, EMPTY,  BARREL, BARREL, BARREL, BARREL, EMPTY,  WALL},
+	    {WALL, BARREL, WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL},
+	    {WALL, BARREL, EMPTY,  BARREL, BARREL, BARREL, EMPTY,  BARREL, BARREL, BARREL, WALL},
+	    {WALL, EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   BARREL, WALL},
+	    {WALL, BARREL, BARREL, BARREL, EMPTY,  BARREL, EMPTY,  EMPTY,  BARREL, BARREL, WALL},
+	    {WALL, EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL},
+	    {WALL, BARREL, BARREL, EMPTY,  BARREL, BARREL, BARREL, EMPTY,  EMPTY,  PLAYER, WALL},
+	    {WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL}
 };
 
 MI0283QT9 lcd; //MI0283QT9 Adapter v1
@@ -81,6 +81,7 @@ void explodeBomb(int radius, int x, int y);
 bool createExplosion(int x, int y);
 void checkCollision(Bomberman *player);
 void checkExplosions();
+void initExplosion(int x, int y);
 //void findBombRadius(int x, int y);
 void drawExplosion(int x, int y);
 void drawPlayer(Bomberman *player);
@@ -168,8 +169,7 @@ void gameLoop() {
 		if (zBut == 1) {
 			placeBomb(&player1);
 			placeBomb(&player2);
-		}
-
+		}else
 		if (joyX < 100)//to the left
 		{
 			walkLeft(&player1);
@@ -219,11 +219,7 @@ void drawPlayer(Bomberman *player) {
 }
 
 void drawEmpty(int x, int y) {
-	if(levelGrid[y][x] == PLAYER){
-		lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(0, 0, 0));
-	}else{
-		lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 255, 255));
-	}
+	lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 255, 255));
 }
 
 void placeBomb(Bomberman *player) {
@@ -303,27 +299,34 @@ bool createExplosion(int x, int y){
 	}
 
 	if(levelGrid[y][x] == EMPTY || levelGrid[y][x] == PLAYER){
-		levelGrid[y][x] = EXPLOSION;
-		drawExplosion(x,y);
-		struct ExplosionTile *current = ExplosionHead;
-		while (current->next != NULL) {
-			current = current->next;
-		}
-
-		struct ExplosionTile *temp = (struct ExplosionTile*)malloc(sizeof(struct ExplosionTile));
-		temp->x = x;
-		temp->y = y;
-		Serial.print("x: ");
-		Serial.println(x);
-		Serial.print("y: ");
-		Serial.println(y);
-		temp->removeTime = timer + 100; //1 seconde
-		temp->next = NULL;
-		current->next = temp;
+		initExplosion(x, y);
 	}else if(levelGrid[y][x] == WALL){
+		return false;
+	}else if(levelGrid[y][x] == BARREL){
+		initExplosion(x, y);
 		return false;
 	}
 	return true;
+}
+
+void initExplosion(int x, int y){
+	levelGrid[y][x] = EXPLOSION;
+	drawExplosion(x,y);
+	struct ExplosionTile *current = ExplosionHead;
+	while (current->next != NULL) {
+		current = current->next;
+	}
+
+	struct ExplosionTile *temp = (struct ExplosionTile*)malloc(sizeof(struct ExplosionTile));
+	temp->x = x;
+	temp->y = y;
+	//Serial.print("x: ");
+	//Serial.println(x);
+	//Serial.print("y: ");
+	//Serial.println(y);
+	temp->removeTime = timer + 100; //1 seconde
+	temp->next = NULL;
+	current->next = temp;
 }
 
 void checkExplosions(){
