@@ -90,6 +90,7 @@ void walkDown(Bomberman *player);
 void walkLeft(Bomberman *player);
 void walkRight(Bomberman *player);
 void walkUp(Bomberman *player);
+void tekenExplosie(Bomberman *player);
 void debugMap();
 void drawTime();
 
@@ -141,26 +142,6 @@ void initController() {
 		pixelPosX += blockSize;
 	}
 }
-
-
-//blast radius//
-//To the left
-//if (levelGrid[bombLocY][bombLocX - bombStrength] == BARREL || levelGrid[bombLocY][bombLocX - bombStrength] == EMPTY || levelGrid[bombLocY][bombLocX - bombStrength] == PLAYER){
-//  drawExplosion();
-//}
-//To the right
-//if (levelGrid[bombLocY][bombLocX + bombStrength] == BARREL || levelGrid[bombLocY][bombLocX + bombStrength] == EMPTY || levelGrid[bombLocY][bombLocX + bombStrength] == PLAYER){
-//  drawExplosion();
-//}
-//To the top
-//if (levelGrid[bombLocY - bombStrenght][bombLocX] == BARREL || levelGrid[bombLocY - bombStrenght][bombLocX] == EMPTY || levelGrid[bombLocY - bombStrength][bombLocX] == PLAYER){
-//  drawExplosion();
-//}
-//To the bottom
-//if (levelGrid[bombLocY + bombStrenght][bombLocX] == BARREL || levelGrid[bombLocY + bombStrenght][bombLocX] == EMPTY || levelGrid[bombLocY + bombStrength][bombLocX] == PLAYER){
-//  drawExplosion();
-//}
-
 
 void gameLoop() {
 	while(1){
@@ -224,7 +205,11 @@ void drawWall(int x, int y) {
 }
 
 void drawPlayer(Bomberman *player) {
+	if(player->state == FALSE){
 	lcd.fillRect(player->x * blockSize + 4, player->y * blockSize + 5, blockSize, blockSize, RGB(0, 0, 0));
+	}else{
+		lcd.fillRect(player->x * blockSize + 4, player->y * blockSize + 5, blockSize, blockSize, RGB(0, 0, 255));
+	}
 }
 
 void drawEmpty(Bomberman *player) {
@@ -289,36 +274,15 @@ void createExplosion(int x, int y){
 	if(x < 0 || x > levelSize - 1 || y < 0 || y > levelSize - 1){
 		return;
 	}
-Serial.print("x: ");
-Serial.println(x);
-Serial.print("y: ");
-Serial.println(y);
 	switch(levelGrid[y][x]){
 		case EMPTY: levelGrid[y][x] = EXPLOSION;break;
 	}
 	
-	//struct ExplosionTile *current = ExplosionHead;
-	//while (current->next != NULL) {
-		//current = current->next;
-//
-	//}
-//
-	//struct ExplosionTile *temp = (struct ExplosionTile*)malloc(sizeof(struct ExplosionTile));
-	//temp->x = x;
-	//temp->y = y;
-	//temp->removeTime = timer + 200;//2 seconden
-	//temp->next = NULL;
-	//current->next = temp;
 
-	
-	
 	lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 0, 0));
 }
 
-//
-//int findBombRadius(int x, int y){
-	//
-//}
+
 
 void drawExplosion(Bomb *b) {
 	lcd.fillRect(b->x * blockSize + 4, b->y * blockSize + 5, blockSize, blockSize, RGB(255, 255, 255));
@@ -328,7 +292,7 @@ void drawExplosion(Bomb *b) {
 void BombermanInit(){
 	player1.x = 1;
 	player1.y = 1;
-	player1.bombRadius = 3;
+	player1.bombRadius = 5;
 	player1.bombMaxAmount = 10;
 	player1.bombsPlaced = 0;
 	player1.state = FALSE;
@@ -339,7 +303,7 @@ void BombermanInit(){
 
 	player2.x = 9;
 	player2.y = 9;
-	player2.bombRadius = 3;
+	player2.bombRadius = 5;
 	player2.bombMaxAmount = 10;
 	player2.bombsPlaced = 0;
 	player2.state = FALSE;
@@ -352,13 +316,21 @@ void BombermanInit(){
 void walkLeft(Bomberman *player){
 	if (levelGrid[player->y][player->x - 1] == EMPTY || levelGrid[player->y][player->x - 1] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
-			} else {
+			} else if (levelGrid[player->y][player->x] == EXPLOSION){
+			tekenExplosie(player);
+			}else{
 			levelGrid[player->y][player->x] = EMPTY;
 			drawEmpty(player);
 		}
-		levelGrid[player->y][player->x - 1] = PLAYER;
-		player->x -= 1;
-		drawPlayer(player);
+		if(levelGrid[player->y][player->x - 1] != EXPLOSION){
+			levelGrid[player->y][player->x - 1] = PLAYER;
+			player->x -= 1;
+			drawPlayer(player);
+			}else{
+			levelGrid[player->y][player->x - 1] = EXPLOSION;
+			player->x -= 1;
+		}
+		checkCollision(player);
 		checkCollision(player);
 	}
 }
@@ -366,13 +338,20 @@ void walkLeft(Bomberman *player){
 void walkRight(Bomberman *player){
 	if (levelGrid[player->y][player->x + 1] == EMPTY || levelGrid[player->y][player->x + 1] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
-			} else {
-			levelGrid[player->y][player->x] = EMPTY;
-			drawEmpty(player);
+		} else if (levelGrid[player->y][player->x] == EXPLOSION){
+				tekenExplosie(player);
+		}else{
+				levelGrid[player->y][player->x] = EMPTY;
+				drawEmpty(player);
 		}
-		levelGrid[player->y][player->x + 1] = PLAYER;
-		player->x += 1;
-		drawPlayer(player);
+		if(levelGrid[player->y][player->x + 1] != EXPLOSION){
+			levelGrid[player->y][player->x + 1] = PLAYER;
+			player->x += 1;
+			drawPlayer(player);
+		}else{
+			levelGrid[player->y][player->x + 1] = EXPLOSION;
+			player->x += 1;
+		}
 		checkCollision(player);
 	}
 }
@@ -380,13 +359,20 @@ void walkRight(Bomberman *player){
 void walkDown(Bomberman *player){
 	if (levelGrid[player->y + 1][player->x] == EMPTY || levelGrid[player->y + 1][player->x] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
-			} else {
-			levelGrid[player->y][player->x] = EMPTY;
-			drawEmpty(player);
+			} else if (levelGrid[player->y][player->x] == EXPLOSION){
+				tekenExplosie(player);
+			}else{
+				levelGrid[player->y][player->x] = EMPTY;
+				drawEmpty(player);
 		}
-		levelGrid[player->y + 1][player->x] = PLAYER;
-		player->y += 1;
-		drawPlayer(player);
+		if(levelGrid[player->y + 1][player->x] != EXPLOSION){
+			levelGrid[player->y + 1][player->x] = PLAYER;
+			player->y += 1;
+			drawPlayer(player);
+		}else{
+			levelGrid[player->y + 1][player->x] = EXPLOSION;
+			player->y += 1;
+		}
 		checkCollision(player);
 	}
 }
@@ -394,13 +380,20 @@ void walkDown(Bomberman *player){
 void walkUp(Bomberman *player){
 	if (levelGrid[player->y - 1][player->x] == EMPTY || levelGrid[player->y - 1][player->x] == EXPLOSION) {
 		if (levelGrid[player->y][player->x] == BOMB) {
-			} else {
-			levelGrid[player->y][player->x] = EMPTY;
-			drawEmpty(player);
+		} else if (levelGrid[player->y][player->x] == EXPLOSION){
+				tekenExplosie(player);
+		}else{
+				levelGrid[player->y][player->x] = EMPTY;
+				drawEmpty(player);
 		}
-		levelGrid[player->y - 1][player->x] = PLAYER;
-		player->y -= 1;
-		drawPlayer(player);
+		if(levelGrid[player->y - 1][player->x] != EXPLOSION){
+			levelGrid[player->y - 1][player->x] = PLAYER;
+			player->y -= 1;		
+			drawPlayer(player);
+		}else{
+			levelGrid[player->y - 1][player->x] = EXPLOSION;
+			player->y -= 1;	
+		}
 		checkCollision(player);
 	}
 }
@@ -432,15 +425,25 @@ ISR(TIMER0_COMPA_vect){
 	timer++;
 }
 
+
+void tekenExplosie(Bomberman *player){
+		lcd.fillRect(player->x * blockSize + 4, player->y * blockSize + 5, blockSize, blockSize, RGB(255, 0, 0));
+}
+
 void checkCollision(Bomberman *player) {
 	if (levelGrid[player->y][player->x] == EXPLOSION) {
 		if (player->state == FALSE) {
 			player->deaths++;
 			player->state = TRUE;
-			player->invinsibleTimer = timer;
+			player->invinsibleTimer = timer;	
+			Serial.println(player->state);		
+			}
 		}
-		if (timer >= player->invinsibleTimer + 3000) {
-			player->state = FALSE;
-		}
+		
+		if (timer >= player->invinsibleTimer + 300) {
+		player->state = FALSE;
+		Serial.println(player->state);
 	}
+					//Serial.println(player->deaths);
+					//Serial.println(player->state);
 }
