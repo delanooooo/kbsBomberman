@@ -7,41 +7,41 @@
 #define STOP_SPACE    403
 #define ONE_SPACE     182
 #define ZERO_SPACE     52
-#define BIT_SPACE 494
+#define BIT_SPACE     494
 
 void sendStart();
 void sendStop();
 void sendZero();
+void sendZeroOld();
 void sendOne();
 void ir_setup();
 void sendData(uint8_t data);
 
 volatile uint16_t sensor = 0x00;
 volatile uint16_t timer = 0;
-volatile uint16_t timer2 = 0;
-volatile uint16_t spacetimer = 0;
+volatile uint16_t sendtime = 0;
 
 int main(void) {
-        ir_setup();
-        _delay_ms(500);
-        sendOne(); sendOne(); sendOne(); sendOne(); sendOne(); sendOne(); 
+    ir_setup();
+    PORTB ^= (1 << PINB5);
+    //for(uint8_t i = 0; i < 200; i++) { sendZero(); sendOne(); PORTB ^= (1 << PINB5); }
+    PORTB ^= (1 << PINB5);
+
+    sendData(0x43);
+    _delay_ms(500);
+    PORTB ^= (1 << PINB5);
+    for(;;){
+        sendZero();
         PORTB ^= (1 << PINB5);
-        for(uint8_t i = 0x41; i <= 0x5A; i++){
-            sendData(i);
-        }
-        for(uint8_t i = 0x61; i <= 0x7A; i++){
-            sendData(i);
-        }
-        PORTB &= ~(1 << PINB5);
+        _delay_ms(500);
+    }
+
+
 }
 
 ISR(TIMER2_COMPA_vect) {
     timer++;
-    //    if(spacetimer > timer) DDRB |= (1 << PINB3);
-}
-
-ISR(TIMER2_COMPB_vect) {
-    timer2++;
+    if(sendtime > timer) DDRB |= (1 << PINB3);
 }
 
 ISR(PCINT0_vect) {
@@ -50,7 +50,7 @@ ISR(PCINT0_vect) {
 
 void sendData(uint8_t data){
     sendStart(); _delay_us(BIT_SPACE);
-    for(uint8_t mask = 0x01 << 7;mask;mask >>= 1){
+    for(uint8_t mask = 0x01 << 7; mask; mask >>= 1){
         if(mask & data) {
             sendOne();  _delay_us(BIT_SPACE);
         } else { 
@@ -68,23 +68,23 @@ void sendBit(){
 
 void sendStart(){                             
     DDRB &= ~(1 << PINB3); // Turn IR led off
-    _delay_us(START_SPACE);
-    DDRB |= (1 << PINB3); // Turn IR led off
-    //    spacetimer = timer + ZERO_SPACE;
+    sendtime = timer + (START_SPACE / 13);
 }
 
 void sendStop(){                             
     DDRB &= ~(1 << PINB3); // Turn IR led off
-    _delay_us(STOP_SPACE);
-    DDRB |= (1 << PINB3); // Turn IR led off
-    //    spacetimer = timer + ZERO_SPACE;
+    sendtime = timer + (STOP_SPACE / 13) + 5;
 }
 
 void sendZero(){                             
     DDRB &= ~(1 << PINB3); // Turn IR led off
+    sendtime = timer + (ZERO_SPACE / 13);
+}
+
+void sendZeroOld(){                             
+    DDRB &= ~(1 << PINB3); // Turn IR led off
     _delay_us(ZERO_SPACE);
-    DDRB |= (1 << PINB3); // Turn IR led off
-    //    spacetimer = timer + ZERO_SPACE;
+    DDRB |= (1 << PINB3);
 }
 
 void sendOne() {
