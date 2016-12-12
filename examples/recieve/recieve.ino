@@ -7,11 +7,9 @@ void led2();
 void own_init();
 uint8_t readValue();
 
-int count;
-char data = 0x00;
+uint8_t data = 0x00;
 uint8_t startCollecting;
 volatile uint16_t measuredTime;
-volatile uint16_t timer_start_counting;
 volatile uint16_t timer1 = 0;
 volatile uint8_t sensor = 0x00;
 int main(void){
@@ -25,39 +23,43 @@ int main(void){
 }
 
 uint8_t readValue(){
-	Serial.print(measuredTime);
-	Serial.print("\n");
-	if(measuredTime > 145){
-		cli();
-		PORTB |= (1 << PINB2);
-		PORTB &= ~(1 << PINB1);
-		PORTB ^= (1 << PINB3);
-		sei();
-		} else {
-		cli();
-		PORTB |= (1 << PINB1);
-		PORTB &= ~(1 << PINB2);
-		PORTB ^= (1 << PINB3);
-		sei();
-	}
-// 	if(measuredTime >= 145 && measuredTime <= 180){
+//  	Serial.print(measuredTime);
+//  	Serial.print("\n");
+	 
+//			Deze werkt
+// 	if(measuredTime >= 145 && measuredTime <= 200){
 // 		startCollecting = 1;
 // 	}
 // 	if(startCollecting > 0){
-// 		if(measuredTime > 90 && measuredTime < 145){
-// 			/*			Serial.print("1");*/
+// 		if(measuredTime > 110 && measuredTime < 145){
 // 			data <<= 1;
 // 			data |= 0x01;
-// 			} else if(measuredTime <= 100){
-// 			/*			Serial.print("0");*/
+// 			} else if(measuredTime <= 110){
 // 			data <<= 1;
-// 			} else if(measuredTime > 180 && measuredTime < 240){
+// 			} else if(measuredTime > 200 && measuredTime < 260){
 // 			startCollecting = 0;
 // 			Serial.print(data);
 // 			Serial.print("\n");
 // 			return data;
 // 		}
-// 	}
+
+
+	if(measuredTime >= 140 && measuredTime <= 160){
+		startCollecting = 1;
+	}
+	if(startCollecting > 0){
+		if(measuredTime >= 110 && measuredTime < 140){
+			data <<= 1;
+			data |= 0x01;
+			} else if(measuredTime < 110){
+			data <<= 1;
+			} else if(measuredTime > 160 && measuredTime < 260){
+			startCollecting = 0;
+			Serial.print(data, HEX);
+			Serial.print("\n");
+			return data;
+		}
+	}
 }
 
 void led1(){
@@ -99,16 +101,16 @@ ISR(PCINT0_vect){
 	sensor = PINB & (1<<PINB0);
 	if(sensor > 0){
 		/*		timer1 = 0;*/
-		timer_start_counting = timer1;
+		measuredTime = timer1;
 		} else {
 		/*		measuredTime = timer1;*/
 		if(timer_start_counting > timer1){
-			measuredTime = 65535 - timer_start_counting + timer1;
+			measuredTime = 65535 - measuredTime + timer1;
 			// 			Serial.println("mT > timer");
 			// 			Serial.println(timer_start_counting);
 			// 			Serial.println(timer1);
 			} else {
-			measuredTime = timer1 - timer_start_counting;
+			measuredTime = timer1 - measuredTime;
 		}
 		readValue();
 	}
