@@ -49,6 +49,7 @@ struct Bomberman{
 	bool state;
 	int deaths = 0;
 	uint16_t invinsibleTimer = 0;
+	uint16_t movementTimer = 0;
 }player1, player2;
 
 typedef enum {
@@ -81,8 +82,8 @@ void explodeBomb(int radius, int x, int y);
 bool createExplosion(int x, int y);
 void checkCollision(Bomberman *player);
 void checkExplosions();
+Bomb * findBombOnLocation(int x, int y);
 void initExplosion(int x, int y);
-//void findBombRadius(int x, int y);
 void drawExplosion(int x, int y);
 void drawPlayer(Bomberman *player);
 void drawWall(int x, int y);
@@ -97,7 +98,7 @@ void debugMap();
 void drawTime();
 
 uint16_t timer;
-uint8_t secondsTimer = 180;
+uint8_t secondsTimer = 14;
 
 void initController() {
 
@@ -166,26 +167,29 @@ void gameLoop() {
 			continue;
 		}
 
-		if (zBut == 1) {
-			placeBomb(&player1);
-			placeBomb(&player2);
-		}else
-		if (joyX < 100)//to the left
-		{
-			walkLeft(&player1);
-			walkLeft(&player2);
-		} else if (joyX > 160) // to the right
-		{
-			walkRight(&player1);
-			walkRight(&player2);
-		} else if (joyY > 160)// to the top
-		{
-			walkUp(&player1);
-			walkUp(&player2);
-		} else if (joyY < 100) // to the bottom
-		{
-			walkDown(&player1);
-			walkDown(&player2);
+		if(timer >= player1.movementTimer + 20){
+			if (zBut == 1) {
+				placeBomb(&player1);
+				placeBomb(&player2);
+			}
+			if (joyX < 100)//to the left
+			{
+				walkLeft(&player1);
+				walkLeft(&player2);
+			} else if (joyX > 160) // to the right
+			{
+				walkRight(&player1);
+				walkRight(&player2);
+			} else if (joyY > 160)// to the top
+			{
+				walkUp(&player1);
+				walkUp(&player2);
+			} else if (joyY < 100) // to the bottom
+			{
+				walkDown(&player1);
+				walkDown(&player2);
+			}
+			player1.movementTimer = timer;
 		}
 
 		checkBombs(&player1);
@@ -298,12 +302,19 @@ bool createExplosion(int x, int y){
 		return false;
 	}
 
-	if(levelGrid[y][x] == EMPTY || levelGrid[y][x] == PLAYER){
+	if(levelGrid[y][x] == EMPTY){
 		initExplosion(x, y);
+	}else if(levelGrid[y][x] == PLAYER){
+		initExplosion(x, y);
+		checkCollision(&player1);
+		checkCollision(&player2);
 	}else if(levelGrid[y][x] == WALL){
 		return false;
 	}else if(levelGrid[y][x] == BARREL){
 		initExplosion(x, y);
+		return false;
+	}else if(levelGrid[y][x] == BOMB){
+		findBombOnLocation(x, y)->detonateTime = 0;//explode the bomb hit by the explosion
 		return false;
 	}
 	return true;
@@ -350,10 +361,30 @@ void checkExplosions(){
 	}
 }
 
-//
-//int findBombRadius(int x, int y){
-	//
-//}
+
+Bomb * findBombOnLocation(int x, int y){
+	struct Bomb *current = player1.head->next;
+	while (current != NULL) {
+		
+		if(current->x == x && current->y == y){
+			return current;
+		}
+		else {
+			current = current->next;
+		}
+	}
+	current = player2.head->next;
+	while (current != NULL) {
+		
+		if(current->x == x && current->y == y){
+			return current;
+		}
+		else {
+			current = current->next;
+		}
+	}
+	return NULL;
+}
 
 void drawExplosion(int x, int y) {
 	lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 0, 0));
@@ -362,7 +393,7 @@ void drawExplosion(int x, int y) {
 void BombermanInit(){
 	player1.x = 1;
 	player1.y = 1;
-	player1.bombRadius = 3;
+	player1.bombRadius = 4;
 	player1.bombMaxAmount = 3;
 	player1.bombsPlaced = 0;
 	player1.state = FALSE;
@@ -373,7 +404,7 @@ void BombermanInit(){
 
 	player2.x = 9;
 	player2.y = 9;
-	player2.bombRadius = 3;
+	player2.bombRadius = 4;
 	player2.bombMaxAmount = 3;
 	player2.bombsPlaced = 0;
 	player2.state = FALSE;
@@ -484,6 +515,10 @@ void drawTime(){
 	lcd.setCursor(285, 50);
 
 	if(secondsTimer == 99){
+		lcd.fillRect(285,50,30,10,RGB(0,0,0));
+	}
+
+	if(secondsTimer == 9){
 		lcd.fillRect(285,50,30,10,RGB(0,0,0));
 	}
 
