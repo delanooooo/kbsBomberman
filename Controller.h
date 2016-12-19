@@ -1,25 +1,26 @@
 #pragma once
 
 #include <Wire.h>
-//#include <SPI.h>
-//#include <digitalWriteFast.h>
-//#include <GraphicsLib.h>
-//#include <SSD1331.h>
-//#include <S65L2F50.h>
-//#include <S65LPH88.h>
-//#include <S65LS020.h>
-//#include <MI0283QT2.h>
+#include <SPI.h>
+#include <digitalWriteFast.h>
+#include <GraphicsLib.h>
+#include <SSD1331.h>
+#include <S65L2F50.h>
+#include <S65LPH88.h>
+#include <S65LS020.h>
+#include <MI0283QT2.h>
 #include <MI0283QT9.h>;
-//#include <DisplaySPI.h>
-//#include <DisplayI2C.h>
+#include <DisplaySPI.h>
+#include <DisplayI2C.h>
 #include "nunchuck_funcs.h"
-//#include <avr/io.h>
-//#include <stdlib.h>
-//#include <stdint.h>
+#include <avr/io.h>
+#include <stdlib.h>
+#include <stdint.h>
 // lcd 240*360
 
-#define blockSize 21
-#define levelSize 11
+#define blockSize 16
+#define levelSizeY 20
+#define levelSizeX 15
 
 struct Bomb {
 	int x;
@@ -58,18 +59,22 @@ typedef enum {
 	EMPTY, WALL, BARREL, PLAYER, BOMB, EXPLOSION
 } object;
 
-object levelGrid[levelSize][levelSize] = {
-	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL},
-	{WALL, PLAYER, EMPTY,  EMPTY,  BARREL, BARREL, EMPTY,  BARREL, BARREL, EMPTY,  WALL},
-	{WALL, EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL,   BARREL, WALL},
-	{WALL, BARREL, BARREL, BARREL, EMPTY,  BARREL, BARREL, BARREL, BARREL, EMPTY,  WALL},
-	{WALL, BARREL, WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL},
-	{WALL, BARREL, EMPTY,  BARREL, BARREL, BARREL, EMPTY,  BARREL, BARREL, BARREL, WALL},
-	{WALL, EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   BARREL, WALL},
-	{WALL, BARREL, BARREL, BARREL, EMPTY,  BARREL, EMPTY,  EMPTY,  BARREL, BARREL, WALL},
-	{WALL, EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL},
-	{WALL, BARREL, BARREL, EMPTY,  BARREL, BARREL, BARREL, EMPTY,  EMPTY,  PLAYER, WALL},
-	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL}
+object levelGrid[levelSizeX][levelSizeY] = {
+	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,  WALL,  WALL, WALL, WALL, WALL, WALL, WALL},
+	{WALL, EMPTY,  EMPTY,  EMPTY,  BARREL, BARREL,  EMPTY,  BARREL,  BARREL, EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  WALL,   BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, BARREL, BARREL, EMPTY,  BARREL,  EMPTY,  BARREL,  EMPTY,  BARREL,  BARREL, EMPTY,  EMPTY,  EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  WALL,   BARREL,  WALL,   BARREL,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,  BARREL, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, BARREL, EMPTY,  BARREL, EMPTY,  BARREL, EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  WALL,   EMPTY, WALL,   EMPTY,  WALL,   BARREL,  WALL,   BARREL, WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  BARREL, BARREL, EMPTY,  BARREL, EMPTY,  EMPTY, BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL,  BARREL,WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  BARREL, BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, BARREL,  WALL,   BARREL, WALL,   EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  BARREL,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
+	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,  WALL,  WALL, WALL, WALL, WALL, WALL, WALL}
 };
 
 MI0283QT9 lcd; //MI0283QT9 Adapter v1
@@ -90,6 +95,7 @@ void drawWall(int x, int y);
 void drawTime();
 void drawExplosion(int x, int y);
 void drawBomb(int x, int y);
+void drawScore();
 
 void checkBombs(Bomberman *player);
 void explodeBomb(int radius, int x, int y);
@@ -101,14 +107,15 @@ void checkExplosions();
 void initExplosion(int x, int y);
 void checkCollision(Bomberman *player);
 
+void gameOver();
 void debugMap();
 
 
 uint16_t timer;
-uint8_t secondsTimer = 14;
+uint8_t secondsTimer = 160;
+
 
 void initController() {
-
 
 	nunchuck_setpowerpins();
 	nunchuck_init(); // send the initilization
@@ -117,9 +124,11 @@ void initController() {
 	lcd.begin();
 	lcd.led(225);
 	lcd.fillScreen(RGB(255, 255, 255));
-	Serial.begin(9600);
-	/////////////////////////////////////////////////////////////////////////////////////
-	lcd.fillRect(240, 5, 76, 231, RGB(0, 0, 0));
+
+	Serial.begin(9600); // serial monitor
+	
+	lcd.fillRect(240, 5, 76, 231, RGB(0, 0, 0)); // HUD
+	drawScore(); // score on HUD
 
 	//init timer
 	TCCR0A = (1 << COM0A0) | (1 << WGM01);
@@ -135,12 +144,11 @@ void initController() {
 	ExplosionHead = ptr;
 	ExplosionHead->next = NULL;
 
-	int pixelPosX = 4; //offset by 4 pixels
-	int pixelPosY = 5; //offset by 5 pixels
-
-	for (int y = 0; y < 11; y++) {
+	int pixelPosX = 0; //offset by 4 pixels
+	int pixelPosY = 0; //offset by 5 pixels	 
+	for (int y = 0; y < levelSizeY; y++) {
 		//row
-		for (int x = 0; x < 11; x++) {
+		for (int x = 0; x < levelSizeX; x++) {
 			if (levelGrid[x][y] == WALL) {
 				drawWall(pixelPosX, pixelPosY);
 				} else if (levelGrid[x][y] == BARREL) {
@@ -154,66 +162,75 @@ void initController() {
 			}
 			pixelPosY += blockSize;
 		}
-		pixelPosY = 5;
+		pixelPosY = 0;
 		pixelPosX += blockSize;
 	}
 }
 
 void gameLoop() {
-	while (1) {
-		nunchuck_get_data();
+	
+		while (secondsTimer != 0) {
+		//if (secondsTimer != 0) {
 
-		zBut = nunchuck_zbutton();
-		joyX = nunchuck_joyx();
-		joyY = nunchuck_joyy();
+			nunchuck_get_data();
 
-		_delay_ms(10);
-		//Serial.print(joyX);
-		//Serial.print("  ");
-		//Serial.println(joyY);
+			zBut = nunchuck_zbutton();
+			joyX = nunchuck_joyx();
+			joyY = nunchuck_joyy();
 
-		if (joyX == 255 && joyY == 255) {
-			continue;
-		}
+			_delay_ms(10);
+			//Serial.print(joyX);
+			//Serial.print("  ");
+			//Serial.println(joyY);
 
-		if (timer >= player1.movementTimer + 20) {
-			if (zBut == 1) {
-				placeBomb(&player1);
-				placeBomb(&player2);
+
+			if (joyX == 255 && joyY == 255) {
+				continue;
 			}
-			if (joyX < 100)//to the left
-			{
-				walkLeft(&player1);
-				walkLeft(&player2);
-			} else if (joyX > 160) // to the right
-			{
-				walkRight(&player1);
-				walkRight(&player2);
-			} else if (joyY > 160)// to the top
-			{
-				walkUp(&player1);
-				walkUp(&player2);
-			} else if (joyY < 100) // to the bottom
-			{
-				walkDown(&player1);
-				walkDown(&player2);
+
+			if (timer >= player1.movementTimer + 20) {
+				if (zBut == 1) {
+					placeBomb(&player1);
+					placeBomb(&player2);
+				}
+				if (joyX < 100)//to the left
+				{
+					walkLeft(&player1);
+					walkLeft(&player2);
+				} else if (joyX > 160) // to the right
+				{
+					walkRight(&player1);
+					walkRight(&player2);
+				} else if (joyY > 160)// to the top
+				{
+					walkUp(&player1);
+					walkUp(&player2);
+				} else if (joyY < 100) // to the bottom
+				{
+					walkDown(&player1);
+					walkDown(&player2);
+				}
+				player1.movementTimer = timer;
 			}
-			player1.movementTimer = timer;
-		}
 
-		checkBombs(&player1);
-		checkBombs(&player2);
-		checkExplosions();
+			checkBombs(&player1);
+			checkBombs(&player2);
+			checkExplosions();
 
-		if (timer % 100 == 0) {
-			secondsTimer--;
-			drawTime();
-		}
+			if (timer % 100 == 0) {
+				secondsTimer--;
+				drawTime();
 
-		checkCollision(&player1);
-		checkCollision(&player2);
-		//debugMap();
-	}
+				checkCollision(&player1);
+				checkCollision(&player2);
+			}
+		
+
+		
+}
+//debugMap();
+		gameOver();
+
 }
 
 void BombermanInit() {
@@ -227,8 +244,8 @@ void BombermanInit() {
 	player1.head = ptr;
 	player1.head->next = NULL;
 
-	player2.x = 9;
-	player2.y = 9;
+	player2.x = 13;
+	player2.y = 13;
 	player2.bombRadius = 4;
 	player2.bombMaxAmount = 3;
 	player2.bombsPlaced = 0;
@@ -332,7 +349,7 @@ Bomb * findBombOnLocation(int x, int y) {
 }
 
 bool createExplosion(int x, int y) {
-	if (x < 0 || x > levelSize - 1 || y < 0 || y > levelSize - 1) {
+	if (x < 0 || x > levelSizeX - 1 || y < 0 || y > levelSizeY - 1) {
 		return false;
 	}
 
@@ -488,6 +505,7 @@ void checkCollision(Bomberman *player) {
 	if (levelGrid[player->y][player->x] == EXPLOSION) {
 		if (player->state == FALSE) {
 			player->deaths++;
+			drawScore();
 			player->state = TRUE;
 			player->invinsibleTimer = timer;
 		}
@@ -510,17 +528,17 @@ void debugMap() {
 }
 
 void drawBomb(int x, int y) {
-	lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 255, 255));
-	lcd.fillEllipse(x * blockSize + 7 + 4, y * blockSize + 7 + 5, 7, 7, RGB(0, 0, 0));
-	lcd.fillRect(x * blockSize + 7 + 4, y * blockSize + 5 + 5, 8, 5, RGB(0, 0, 0));
-	lcd.drawLine(x * blockSize + 15 + 4, y * blockSize + 6 + 5, x * blockSize + 17 + 4, y * blockSize + 3 + 5, RGB(255, 0, 0));
+	lcd.fillRect(x * blockSize, y * blockSize, blockSize, blockSize, RGB(255, 255, 255));
+	lcd.fillEllipse(x * blockSize + 7, y * blockSize + 7, 7, 7, RGB(0, 0, 0));
+	lcd.fillRect(x * blockSize + 7, y * blockSize + 5, 8, 5, RGB(0, 0, 0));
+	lcd.drawLine(x * blockSize + 15, y * blockSize + 6, x * blockSize + 17, y * blockSize + 3, RGB(255, 0, 0));
 
 }
 
 void drawBarrel(int x, int y) {
-	lcd.fillRect(x + 1, y + 1, 19, 19, RGB(102, 0, 0));
+	lcd.fillRect(x + 1, y + 1, blockSize - 2, blockSize - 2, RGB(102, 0, 0));
 	lcd.drawRect(x, y, blockSize, blockSize, RGB(0, 0, 0));
-	lcd.drawRect(x, y + 7, blockSize, 8, RGB(0, 0, 0));
+	lcd.drawRect(x, y, blockSize, 8, RGB(0, 0, 0));
 }
 
 void drawWall(int x, int y) {
@@ -530,58 +548,124 @@ void drawWall(int x, int y) {
 
 void drawPlayer(Bomberman *player) {
 	if (player->state == FALSE) {
-
-		lcd.fillRect(player->x * blockSize + 4 + 6, player->y * blockSize + 5 + 1, 11, 16, RGB(255, 255, 0)); // body
-		lcd.fillRect(player->x * blockSize + 4 + 9, player->y * blockSize + 5 + 4, 2, 2, RGB(0, 0, 0)); // eye
-		lcd.fillRect(player->x * blockSize + 4 + 12, player->y * blockSize + 5 + 4, 2, 2, RGB(0, 0, 0)); // eye
-		lcd.drawEllipse(player->x * blockSize + 4 + 11, player->y * blockSize + 5 + 8, 5, 2, RGB(0, 0, 0)); // smile
-		lcd.fillRect(player->x * blockSize + 4 + 6, player->y * blockSize + 5 + 5, 11, 4, RGB(255, 255, 0)); // smile
-
-		lcd.drawLine(player->x * blockSize + 4 + 7, player->y * blockSize + 5 + 17, player->x * blockSize + 4 + 7, player->y * blockSize + 5 + 20, RGB(0, 0, 0)); // left leg
-		lcd.drawLine(player->x * blockSize + 4 + 15, player->y * blockSize + 5 + 17, player->x * blockSize + 4 + 15, player->y * blockSize + 5 + 20, RGB(0, 0, 0)); // right leg
-		lcd.drawLine(player->x * blockSize + 4 + 5, player->y * blockSize + 5 + 9, player->x * blockSize + 4 + 5, player->y * blockSize + 5 + 14, RGB(0, 0, 0)); // left arm
-		lcd.drawLine(player->x * blockSize + 4 + 17, player->y * blockSize + 5 + 9, player->x * blockSize + 4 + 17, player->y * blockSize + 5 + 14, RGB(0, 0, 0)); // right arm
-		lcd.drawLine(player->x * blockSize + 4 + 6, player->y * blockSize + 5 + 17, player->x * blockSize + 4 + 16, player->y * blockSize + 5 + 17, RGB(0, 0, 0)); // belt
+		lcd.fillRect(player->x * blockSize + 4 , player->y * blockSize + 3, 8, 8, RGB(255, 255, 0)); // body
+		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 2, 8, 1, RGB(0, 0, 0)); // hat
+		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 1, 6, 1, RGB(0, 0, 0)); // hat
+		lcd.fillRect(player->x * blockSize + 5 , player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
+		lcd.fillRect(player->x * blockSize + 9, player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
+		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 6, 6, 1, RGB(0, 0, 0)); // smile
+		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 11, 8, 1, RGB(0, 0, 0)); // belt
+		lcd.drawRect(player->x * blockSize + 3, player->y * blockSize + 7, 1, 3, RGB(0, 0, 0)); // left arm
+		lcd.drawRect(player->x * blockSize + 12, player->y * blockSize + 7, 1, 3, RGB(0, 0, 0)); // right arm
+		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 12, 1, 3, RGB(0, 0, 0)); // left leg
+		lcd.drawRect(player->x * blockSize + 10, player->y * blockSize + 12, 1, 3, RGB(0, 0, 0)); // right leg
 		} else {
-		lcd.fillRect(player->x * blockSize + 4 + 6, player->y * blockSize + 5 + 1, 11, 16, RGB(0, 0, 255)); // body
-		lcd.fillRect(player->x * blockSize + 4 + 9, player->y * blockSize + 5 + 4, 2, 2, RGB(0, 0, 0)); // eye
-		lcd.fillRect(player->x * blockSize + 4 + 12, player->y * blockSize + 5 + 4, 2, 2, RGB(0, 0, 0)); // eye
-		lcd.drawEllipse(player->x * blockSize + 4 + 11, player->y * blockSize + 5 + 8, 5, 2, RGB(0, 0, 0)); // smile
-		lcd.fillRect(player->x * blockSize + 4 + 6, player->y * blockSize + 5 + 5, 11, 4, RGB(0, 0, 255)); // smile
-
-		lcd.drawLine(player->x * blockSize + 4 + 7, player->y * blockSize + 5 + 17, player->x * blockSize + 4 + 7, player->y * blockSize + 5 + 20, RGB(0, 0, 0)); // left leg
-		lcd.drawLine(player->x * blockSize + 4 + 15, player->y * blockSize + 5 + 17, player->x * blockSize + 4 + 15, player->y * blockSize + 5 + 20, RGB(0, 0, 0)); // right leg
-		lcd.drawLine(player->x * blockSize + 4 + 5, player->y * blockSize + 5 + 9, player->x * blockSize + 4 + 5, player->y * blockSize + 5 + 14, RGB(0, 0, 0)); // left arm
-		lcd.drawLine(player->x * blockSize + 4 + 17, player->y * blockSize + 5 + 9, player->x * blockSize + 4 + 17, player->y * blockSize + 5 + 14, RGB(0, 0, 0)); // right arm
-		lcd.drawLine(player->x * blockSize + 4 + 6, player->y * blockSize + 5 + 17, player->x * blockSize + 4 + 16, player->y * blockSize + 5 + 17, RGB(0, 0, 0)); // belt
+		lcd.fillRect(player->x * blockSize + 4 , player->y * blockSize + 3, 8, 8, RGB(0, 0, 255)); // body
+		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 2, 8, 1, RGB(0, 0, 0)); // hat
+		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 1, 6, 1, RGB(0, 0, 0)); // hat
+		lcd.fillRect(player->x * blockSize + 5 , player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
+		lcd.fillRect(player->x * blockSize + 9, player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
+		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 6, 6, 1, RGB(0, 0, 0)); // smile
+		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 11, 8, 1, RGB(0, 0, 0)); // belt
+		lcd.drawRect(player->x * blockSize + 3, player->y * blockSize + 7, 1, 3, RGB(0, 0, 0)); // left arm
+		lcd.drawRect(player->x * blockSize + 12, player->y * blockSize + 7, 1, 3, RGB(0, 0, 0)); // right arm
+		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 12, 1, 3, RGB(0, 0, 0)); // left leg
+		lcd.drawRect(player->x * blockSize + 10, player->y * blockSize + 12, 1, 3, RGB(0, 0, 0)); // right leg
 	}
 }
 
 void drawEmpty(int x, int y) {
-	lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 255, 255));
+	lcd.fillRect(x * blockSize, y * blockSize , blockSize, blockSize, RGB(255, 255, 255));
 }
 
 void drawExplosion(int x, int y) {
-	//lcd.fillRect(x * blockSize + 4, y * blockSize + 5, blockSize, blockSize, RGB(255, 0, 0));
-	////
-	lcd.fillEllipse(x * blockSize + 10 + 4, y * blockSize + 10 + 5, 10, 10, RGB(255, 0, 0));
-	lcd.drawEllipse(x * blockSize + 10 + 4, y * blockSize + 10 + 5, 8, 8, RGB(255, 162, 0));
-	lcd.drawEllipse(x * blockSize + 10 + 4, y * blockSize + 10 + 5, 5, 5, RGB(255, 162, 0));
-	lcd.fillEllipse(x * blockSize + 11 + 4, y * blockSize + 10 + 5, 3, 3, RGB(255, 255, 255));
+	lcd.fillRect(x * blockSize, y * blockSize, blockSize, blockSize, RGB(255, 0, 0));
+	//lcd.fillEllipse(x * blockSize + 8, y * blockSize + 8, 8, 8, RGB(255, 0, 0));
+	lcd.drawEllipse(x * blockSize + 8, y * blockSize + 8, 6, 6, RGB(255, 162, 0));
+	lcd.drawEllipse(x * blockSize + 8, y * blockSize + 8, 3, 3, RGB(255, 162, 0));
+	lcd.fillEllipse(x * blockSize + 9, y * blockSize + 8, 1, 1, RGB(255, 255, 255));
 }
 
 void drawTime() {
 	lcd.setTextColor(RGB(255, 255, 255), RGB(0, 0, 0));
-	lcd.setCursor(245, 50);
-	lcd.print("Time:");
-	lcd.setCursor(285, 50);
+	lcd.setCursor(250, 25);
+	lcd.println("Time:");
+	lcd.setCursor(255, 35);
 
 	if (secondsTimer == 99) {
-		lcd.fillRect(285, 50, 30, 10, RGB(0, 0, 0));
+		lcd.fillRect(271, 35, 10, 10, RGB(0, 0, 0));
 	}
 
 	if (secondsTimer == 9) {
-		lcd.fillRect(285, 50, 30, 10, RGB(0, 0, 0));
+		lcd.fillRect(263, 35, 10, 10, RGB(0, 0, 0));
 	}
+	
+
 	lcd.println(secondsTimer);
 }
+
+void drawScore(){
+	int score1 = player2.deaths;  
+	int score2 = player1.deaths;
+
+		lcd.setTextColor(RGB(255, 255, 255), RGB(0, 0, 0));
+		lcd.setCursor(250, 55);
+		lcd.println("Score");
+		lcd.setCursor(240, 65);
+		lcd.println("speler 1");
+		lcd.setCursor(265, 77);
+		lcd.print(score1);
+
+		lcd.setCursor(250, 115);
+		lcd.println("Score");
+		lcd.setCursor(240, 125);
+		lcd.println("speler 2");
+		lcd.setCursor(265, 137);
+		lcd.print(score2);
+	}
+
+void gameOver(){
+		lcd.fillScreen(RGB(0,0,0));
+		lcd.setCursor(80, 70);
+		lcd.setTextSize(5);
+		lcd.print("GAME");
+		lcd.setCursor(80, 120);
+		lcd.print("OVER");
+		lcd.setTextSize(1);
+
+
+		_delay_ms(3000);
+		int score1 = player2.deaths;
+		int score2 = player1.deaths;
+		lcd.fillScreen(RGB(0,0,0));
+		lcd.setCursor(50, 35);
+		lcd.setTextSize(2);
+		lcd.print("Score player 1");
+		lcd.setCursor(150, 70);
+		lcd.print(score1);
+		lcd.setCursor(50, 120);
+		lcd.print("Score player 2");
+		lcd.setCursor(150, 155);
+		lcd.print(score2);
+		lcd.setTextSize(1);
+		lcd.setCursor(60,200);
+		lcd.print("Press c to go to the menu");	
+
+		int i = 0;
+		while(i == 0){
+				nunchuck_get_data();
+				cBut = nunchuck_cbutton(); 
+				Serial.println(cBut);
+				if(cBut == 1){		
+					i++;
+				}
+		  }
+			
+		lcd.setCursor(10,10);
+		lcd.println("I love kris");
+		    
+		
+			
+	
+		
+	}
