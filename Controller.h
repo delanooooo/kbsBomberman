@@ -170,8 +170,6 @@ void initController() {
 void gameLoop() {
 	
 		while (secondsTimer != 0) {
-		//if (secondsTimer != 0) {
-
 			nunchuck_get_data();
 
 			zBut = nunchuck_zbutton();
@@ -660,12 +658,8 @@ void gameOver(){
 					i++;
 				}
 		  }
-			
-		lcd.setCursor(10,10);
-		lcd.println("I love kris");
-		    
 		
-			
-	
+		lcd.setCursor(10,10);		
+		lcd.println("ShowMenu(); of zoiets");
 		
 	}
