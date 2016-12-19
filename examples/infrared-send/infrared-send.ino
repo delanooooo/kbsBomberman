@@ -3,10 +3,9 @@
 int main(void) {
     ir_setup();
 
-    sendDataOld(0x43); sendDataOld(0x43); sendDataOld(0x43); sendDataOld(0x43); 
-    sendDataOld(0x43); sendDataOld(0x43); sendDataOld(0x43); sendDataOld(0x43); 
+    PC_DISABLE;
 
     for(;;){
-        sendData(0x41);
     }
+
 }

@@ -1,22 +1,27 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include <Arduino.h>
 
 // Variables
-volatile uint16_t sensor = 0;
-volatile uint16_t timer = 0;
-volatile uint16_t sendtime = 0;
+volatile uint16_t sensor =      0x00;
+volatile uint16_t timer =       0x00;
+volatile uint16_t buffer =      0x00;
+volatile uint16_t sendtime =    0x00;
+volatile uint8_t  nbit =        0x00;
+volatile uint8_t  data =        0x00;
 
 // Defines
 #define SWITCH       5000
-#define START_SPACE   325
+#define START_SPACE   312
 #define STOP_SPACE    416
 #define ONE_SPACE     234
-#define ZERO_SPACE     65
+#define ZERO_SPACE     52
 #define BIT_SPACE     494
 
 #define IR_DISABLE DDRB &= ~(1 << PINB3)
 #define IR_ENABLE  DDRB |= (1 << PINB3)
+
+#define PC_DISABLE DDRB &= ~(1 << PINB4)
+#define PC_ENABLE  DDRB |= (1 << PINB4)
 
 // Prototypes
 void ir_setup();
@@ -29,27 +34,34 @@ void sendData(uint8_t data); void sendDataOld(uint8_t data);
 
 ISR(TIMER2_COMPA_vect) {
     timer++;
-    if(timer > sendtime) IR_ENABLE;
+//  if(timer > buffer)   IR_DISABLE;
+//  if(timer > sendtime) IR_ENABLE;
 }
 
-ISR(PCINT0_vect) {
-    sensor++;
+//void sendData(uint8_t d){
+//    timer = 0;
+//    nbit = (0x01 << 7);
+//    data = d;
+//    sendtime = timer + (START_SPACE / 13);
+//    buffer = sendtime + (BIT_SPACE / 13);
+//    IR_DISABLE;
+//}
+
+
+ISR(INT1_vect) {
+    DDRB |= (1 << PINB5);
 }
 
 void sendData(uint8_t data){
     sendStart(); 
-    _delay_us(BIT_SPACE);
-    for(uint8_t mask = 0x01 << 7; mask; mask >>= 1){
-        if(mask & data) {
-            sendOne();  
-            _delay_us(BIT_SPACE);
-        } else { 
-            sendZero(); 
-            _delay_us(BIT_SPACE);
-        }
+    uint8_t mask = 0x01 << 7;
+    while(mask){
+        if(mask & data) sendOne();
+        else            sendZero();
+        mask >>= 1;
+        while(timer < buffer){}
     }
-    sendStop(); 
-    _delay_us(BIT_SPACE);
+    sendStop();
 }
 
 void sendDataOld(uint8_t data){
@@ -70,8 +82,7 @@ void sendBit(){
 }
 
 void sendStart(){                             
-    IR_DISABLE;
-    sendtime = timer + (START_SPACE / 13);
+    sendtime = timer + (BIT_SPACE / 13);
 }
 
 void sendStartOld(){                             
@@ -81,8 +92,8 @@ void sendStartOld(){
 }
 
 void sendStop(){                             
-    DDRB &= ~(1 << PINB3); // Turn IR led off
-    sendtime = timer + (STOP_SPACE / 13);
+    buffer = timer + (STOP_SPACE / 13);
+    sendtime = buffer + (BIT_SPACE / 13);
 }
 
 void sendStopOld(){                             
@@ -92,8 +103,8 @@ void sendStopOld(){
 }
 
 void sendZero(){                             
-    DDRB &= ~(1 << PINB3); // Turn IR led off
-    sendtime = timer + (ZERO_SPACE / 13);
+    buffer = timer + (ZERO_SPACE / 13);
+    sendtime = buffer + (BIT_SPACE / 13);
 }
 
 void sendZeroOld(){                             
@@ -103,8 +114,11 @@ void sendZeroOld(){
 }
 
 void sendOne() {
-    DDRB &= ~(1 << PINB3); // Turn IR led off
-    sendtime = timer + (ONE_SPACE / 13);
+    if(timer > sendtime){
+        timer = 0;
+        buffer = timer + (ONE_SPACE / 13);
+        sendtime = buffer + (BIT_SPACE / 13);
+    }
 }
 
 void sendOneOld() {
@@ -116,11 +130,15 @@ void sendOneOld() {
 void ir_setup() {
     cli();
 
-    PCICR |= (1 << PCIE0);
-    PCMSK0 |= (1<< PCINT0);
-    EICRA = (1 << ISC11) | (1 << ISC10);
+    PCICR |= (1 << PCIE2);   // Enable pin change interrupt 0
+    PCMSK0 |= (1 << PCINT0); // Listen to PINB4 for pin change interrupt
+    EICRA |= (1 << ISC10);
+    EIMSK |= (1 << INT1);
 
-    DDRB = (1 << PINB3) | (1 << PINB5); //output pin for LED
+    DDRB |= (1 << PINB5); 
+    DDRB |= (0 << PINB4); 
+    DDRB |= (1 << PINB3); //output pin for LED
+    DDRD |= (1 << PINB2);
     DDRB &= ~(1 << PINB0); //input pin for IR sensor
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
     TCCR2B |= (1 << WGM22) | (1 << CS20);
