@@ -108,11 +108,13 @@ void initExplosion(int x, int y);
 void checkCollision(Bomberman *player);
 
 void gameOver();
+void highScores(int pl1, int pl2);
+void getLetter();
 void debugMap();
 
 
 uint16_t timer;
-uint8_t secondsTimer = 160;
+uint8_t secondsTimer = 3;
 
 
 void initController() {
@@ -390,7 +392,6 @@ void initExplosion(int x, int y) {
 }
 
 void checkExplosions() {
-
 	struct ExplosionTile *current = ExplosionHead->next;
 	struct ExplosionTile *prev = ExplosionHead;
 	while (current != NULL) {
@@ -622,6 +623,7 @@ void drawScore(){
 		lcd.print(score2);
 	}
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gameOver(){
 		lcd.fillScreen(RGB(0,0,0));
 		lcd.setCursor(80, 70);
@@ -631,10 +633,12 @@ void gameOver(){
 		lcd.print("OVER");
 		lcd.setTextSize(1);
 
-
 		_delay_ms(3000);
 		int score1 = player2.deaths;
 		int score2 = player1.deaths;
+
+		highScores(score1, score2);
+		
 		lcd.fillScreen(RGB(0,0,0));
 		lcd.setCursor(50, 35);
 		lcd.setTextSize(2);
@@ -658,8 +662,78 @@ void gameOver(){
 					i++;
 				}
 		  }
-		
 		lcd.setCursor(10,10);		
 		lcd.println("ShowMenu(); of zoiets");
-		
 	}
+
+int highScore = -1;
+void highScores(int pl1, int pl2){	
+	if(pl1 > highScore){
+		lcd.fillScreen(RGB(0,0,0));
+		lcd.setCursor(100,60);
+		lcd.setTextSize(2);
+		lcd.print("PLAYER 1");
+		lcd.setCursor(35,100);
+		lcd.print("BROKE THE RECORD");
+		_delay_ms(3000);
+		getLetter();
+		//print letter met score;
+		highScore = pl1;
+		
+	}else if(pl2 > highScore){
+		lcd.fillScreen(RGB(0,0,0));
+		lcd.setCursor(100,60);
+		lcd.setTextSize(2);
+		lcd.print("PLAYER 2");
+		lcd.setCursor(35,100);
+		lcd.print("BROKE THE RECORD");
+		_delay_ms(3000);
+		getLetter();
+		//print letter met score;
+		highScore = pl2;
+	}
+} 
+
+void getLetter(){
+	nunchuck_get_data();
+	cBut = nunchuck_cbutton();
+	joyY = nunchuck_joyy();
+	
+	char letter[26];
+	strcpy(letter, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	
+	lcd.fillScreen(RGB(0,0,0));
+	lcd.setCursor(45, 60);
+	lcd.print("Choose a letter");
+
+	int i = 0;
+	int done = 0;
+	while(done == 0){
+		_delay_ms(150);
+		nunchuck_get_data();
+		cBut = nunchuck_cbutton();
+		joyY = nunchuck_joyy();
+		if (joyY > 160)// to the top
+		{
+			if (i > 26){
+				i = 0;
+			}
+			i++;
+		} else if (joyY < 100) // to the bottom
+		{
+			if (i < 0){
+				i = 26;
+			}
+			i--;
+		}
+		lcd.setCursor(150,100);
+		lcd.setTextSize(4);
+		lcd.println(letter[i]);
+		
+		if(cBut == 1){
+			done++;
+			char winner = letter[i];
+		}
+	}	
+
+}
