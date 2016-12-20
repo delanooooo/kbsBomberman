@@ -86,6 +86,7 @@ MI0283QT9 lcd; //MI0283QT9 Adapter v1
 byte zBut, cBut, joyX, joyY;
 
 //prototyping
+void showMenu();
 void initGame();
 void gameLoop();
 void BombermanInit();
@@ -120,7 +121,7 @@ void debugMap();
 
 
 uint16_t timer;
-uint8_t secondsTimer = 160;
+uint8_t secondsTimer = 10;
 
 void initMain(){
 	nunchuck_setpowerpins();
@@ -131,8 +132,12 @@ void initMain(){
 	lcd.led(225);
 
 	Serial.begin(9600); // serial monitor
+	showMenu();
+}
 
+void showMenu(){
 	lcd.fillScreen(RGB(0,0,0));
+	lcd.setTextColor(RGB(255, 255, 255), RGB(0, 0, 0));
 	lcd.setCursor(50, 40);
 	lcd.setTextSize(3);
 	lcd.print("Bomberman");
@@ -180,7 +185,6 @@ void initMain(){
 			_delay_ms(1000);
 		}
 	}
-
 	initGame();
 }
 
@@ -722,7 +726,7 @@ void gameOver(){
 		}
 	}
 	lcd.setCursor(10,10);
-	lcd.println("ShowMenu(); of zoiets");
+	showMenu();
 }
 
 int highScore = -1;
