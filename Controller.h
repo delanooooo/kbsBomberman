@@ -1,26 +1,31 @@
 #pragma once
 
 #include <Wire.h>
-#include <SPI.h>
-#include <digitalWriteFast.h>
-#include <GraphicsLib.h>
-#include <SSD1331.h>
-#include <S65L2F50.h>
-#include <S65LPH88.h>
-#include <S65LS020.h>
-#include <MI0283QT2.h>
+//#include <SPI.h>
+//#include <digitalWriteFast.h>
+//#include <GraphicsLib.h>
+//#include <SSD1331.h>
+//#include <S65L2F50.h>
+//#include <S65LPH88.h>
+//#include <S65LS020.h>
+//#include <MI0283QT2.h>
 #include <MI0283QT9.h>;
-#include <DisplaySPI.h>
-#include <DisplayI2C.h>
+//#include <DisplaySPI.h>
+//#include <DisplayI2C.h>
 #include "nunchuck_funcs.h"
-#include <avr/io.h>
-#include <stdlib.h>
-#include <stdint.h>
+//#include <avr/io.h>
+//#include <stdlib.h>
+//#include <stdint.h>
 // lcd 240*360
 
 #define blockSize 16
 #define levelSizeY 20
 #define levelSizeX 15
+
+typedef enum{
+	Start, Instructions, Highscores
+}menuItems;
+menuItems currentItem = Instructions;
 
 struct Bomb {
 	int x;
@@ -81,6 +86,7 @@ MI0283QT9 lcd; //MI0283QT9 Adapter v1
 byte zBut, cBut, joyX, joyY;
 
 //prototyping
+void initGame();
 void gameLoop();
 void BombermanInit();
 void walkDown(Bomberman *player);
@@ -114,21 +120,72 @@ void debugMap();
 
 
 uint16_t timer;
-uint8_t secondsTimer = 3;
+uint8_t secondsTimer = 160;
 
-
-void initController() {
-
+void initMain(){
 	nunchuck_setpowerpins();
 	nunchuck_init(); // send the initilization
 
 	//init display
 	lcd.begin();
 	lcd.led(225);
-	lcd.fillScreen(RGB(255, 255, 255));
 
 	Serial.begin(9600); // serial monitor
-	
+
+	lcd.fillScreen(RGB(0,0,0));
+	lcd.setCursor(50, 40);
+	lcd.setTextSize(3);
+	lcd.print("Bomberman");
+	lcd.setCursor(50, 70);
+	lcd.setTextSize(2);
+	lcd.print("Start Game");
+	lcd.setCursor(50, 100);
+	lcd.print("Instructions");
+	lcd.setCursor(50, 130);
+	lcd.print("Highscores");
+	lcd.setTextSize(1);
+	lcd.setCursor(60,200);
+	lcd.print("Press c to select");
+
+	int i = 0;
+	while(i == 0){
+		nunchuck_get_data();
+		cBut = nunchuck_cbutton();
+		joyY = nunchuck_joyy();
+		Serial.println(cBut);
+		if(cBut == 1){
+			i++;
+		}
+		if (joyY > 160){//up
+			if(currentItem == Start){
+				currentItem = Highscores;
+				}else if(currentItem == Instructions){
+				currentItem = Start;
+				}else if(currentItem == Highscores){
+				currentItem = Instructions;
+			}
+			lcd.fillRect(240, 65, 40, 110, RGB(0,0,0));
+			lcd.fillCircle(260, 75 + (currentItem * 30), 10, RGB(0, 255, 0));
+			_delay_ms(1000);
+			}else if(joyY < 100){//down
+			if(currentItem == Start){
+				currentItem = Instructions;
+				}else if(currentItem == Instructions){
+				currentItem = Highscores;
+				}else if(currentItem == Highscores){
+				currentItem = Start;
+			}
+			lcd.fillRect(240, 65, 40, 110, RGB(0,0,0));
+			lcd.fillCircle(260, 75 + (currentItem * 30), 10, RGB(0, 255, 0));
+			_delay_ms(1000);
+		}
+	}
+
+	initGame();
+}
+
+void initGame() {
+	lcd.fillScreen(RGB(255, 255, 255));
 	lcd.fillRect(240, 5, 76, 231, RGB(0, 0, 0)); // HUD
 	drawScore(); // score on HUD
 
@@ -147,7 +204,7 @@ void initController() {
 	ExplosionHead->next = NULL;
 
 	int pixelPosX = 0; //offset by 4 pixels
-	int pixelPosY = 0; //offset by 5 pixels	 
+	int pixelPosY = 0; //offset by 5 pixels
 	for (int y = 0; y < levelSizeY; y++) {
 		//row
 		for (int x = 0; x < levelSizeX; x++) {
@@ -167,69 +224,72 @@ void initController() {
 		pixelPosY = 0;
 		pixelPosX += blockSize;
 	}
+	gameLoop();
 }
 
 void gameLoop() {
 	
-		while (secondsTimer != 0) {
-			nunchuck_get_data();
+	while (secondsTimer != 0) {
+		//if (secondsTimer != 0) {
 
-			zBut = nunchuck_zbutton();
-			joyX = nunchuck_joyx();
-			joyY = nunchuck_joyy();
+		nunchuck_get_data();
 
-			_delay_ms(10);
-			//Serial.print(joyX);
-			//Serial.print("  ");
-			//Serial.println(joyY);
+		zBut = nunchuck_zbutton();
+		joyX = nunchuck_joyx();
+		joyY = nunchuck_joyy();
+
+		_delay_ms(10);
+		//Serial.print(joyX);
+		//Serial.print("  ");
+		//Serial.println(joyY);
 
 
-			if (joyX == 255 && joyY == 255) {
-				continue;
+		if (joyX == 255 && joyY == 255) {
+			continue;
+		}
+
+		if (timer >= player1.movementTimer + 20) {
+			if (zBut == 1) {
+				placeBomb(&player1);
+				placeBomb(&player2);
 			}
-
-			if (timer >= player1.movementTimer + 20) {
-				if (zBut == 1) {
-					placeBomb(&player1);
-					placeBomb(&player2);
-				}
-				if (joyX < 100)//to the left
-				{
-					walkLeft(&player1);
-					walkLeft(&player2);
-				} else if (joyX > 160) // to the right
-				{
-					walkRight(&player1);
-					walkRight(&player2);
-				} else if (joyY > 160)// to the top
-				{
-					walkUp(&player1);
-					walkUp(&player2);
-				} else if (joyY < 100) // to the bottom
-				{
-					walkDown(&player1);
-					walkDown(&player2);
-				}
-				player1.movementTimer = timer;
+			if (joyX < 100)//to the left
+			{
+				walkLeft(&player1);
+				walkLeft(&player2);
+			} else if (joyX > 160) // to the right
+			{
+				walkRight(&player1);
+				walkRight(&player2);
+			} else if (joyY > 160)// to the top
+			{
+				walkUp(&player1);
+				walkUp(&player2);
+			} else if (joyY < 100) // to the bottom
+			{
+				walkDown(&player1);
+				walkDown(&player2);
 			}
+			player1.movementTimer = timer;
+		}
 
-			checkBombs(&player1);
-			checkBombs(&player2);
-			checkExplosions();
+		checkBombs(&player1);
+		checkBombs(&player2);
+		checkExplosions();
 
-			if (timer % 100 == 0) {
-				secondsTimer--;
-				drawTime();
+		if (timer % 100 == 0) {
+			secondsTimer--;
+			drawTime();
 
-				checkCollision(&player1);
-				checkCollision(&player2);
-			}
+			checkCollision(&player1);
+			checkCollision(&player2);
+		}
 		
 
 		
-}
-//debugMap();
-		gameOver();
+	}
+	//debugMap();
+	gameOver();
 
 }
 
@@ -392,6 +452,7 @@ void initExplosion(int x, int y) {
 }
 
 void checkExplosions() {
+
 	struct ExplosionTile *current = ExplosionHead->next;
 	struct ExplosionTile *prev = ExplosionHead;
 	while (current != NULL) {
@@ -604,70 +665,68 @@ void drawTime() {
 }
 
 void drawScore(){
-	int score1 = player2.deaths;  
+	int score1 = player2.deaths;
 	int score2 = player1.deaths;
 
-		lcd.setTextColor(RGB(255, 255, 255), RGB(0, 0, 0));
-		lcd.setCursor(250, 55);
-		lcd.println("Score");
-		lcd.setCursor(240, 65);
-		lcd.println("speler 1");
-		lcd.setCursor(265, 77);
-		lcd.print(score1);
+	lcd.setTextColor(RGB(255, 255, 255), RGB(0, 0, 0));
+	lcd.setCursor(250, 55);
+	lcd.println("Score");
+	lcd.setCursor(240, 65);
+	lcd.println("speler 1");
+	lcd.setCursor(265, 77);
+	lcd.print(score1);
 
-		lcd.setCursor(250, 115);
-		lcd.println("Score");
-		lcd.setCursor(240, 125);
-		lcd.println("speler 2");
-		lcd.setCursor(265, 137);
-		lcd.print(score2);
-	}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	lcd.setCursor(250, 115);
+	lcd.println("Score");
+	lcd.setCursor(240, 125);
+	lcd.println("speler 2");
+	lcd.setCursor(265, 137);
+	lcd.print(score2);
+}
 void gameOver(){
-		lcd.fillScreen(RGB(0,0,0));
-		lcd.setCursor(80, 70);
-		lcd.setTextSize(5);
-		lcd.print("GAME");
-		lcd.setCursor(80, 120);
-		lcd.print("OVER");
-		lcd.setTextSize(1);
+	lcd.fillScreen(RGB(0,0,0));
+	lcd.setCursor(80, 70);
+	lcd.setTextSize(5);
+	lcd.print("GAME");
+	lcd.setCursor(80, 120);
+	lcd.print("OVER");
+	lcd.setTextSize(1);
 
-		_delay_ms(3000);
-		int score1 = player2.deaths;
-		int score2 = player1.deaths;
+	_delay_ms(3000);
+	int score1 = player2.deaths;
+	int score2 = player1.deaths;
 
-		highScores(score1, score2);
-		
-		lcd.fillScreen(RGB(0,0,0));
-		lcd.setCursor(50, 35);
-		lcd.setTextSize(2);
-		lcd.print("Score player 1");
-		lcd.setCursor(150, 70);
-		lcd.print(score1);
-		lcd.setCursor(50, 120);
-		lcd.print("Score player 2");
-		lcd.setCursor(150, 155);
-		lcd.print(score2);
-		lcd.setTextSize(1);
-		lcd.setCursor(60,200);
-		lcd.print("Press c to go to the menu");	
+	highScores(score1, score2);
+	
+	lcd.fillScreen(RGB(0,0,0));
+	lcd.setCursor(50, 35);
+	lcd.setTextSize(2);
+	lcd.print("Score player 1");
+	lcd.setCursor(150, 70);
+	lcd.print(score1);
+	lcd.setCursor(50, 120);
+	lcd.print("Score player 2");
+	lcd.setCursor(150, 155);
+	lcd.print(score2);
+	lcd.setTextSize(1);
+	lcd.setCursor(60,200);
+	lcd.print("Press c to go to the menu");
 
-		int i = 0;
-		while(i == 0){
-				nunchuck_get_data();
-				cBut = nunchuck_cbutton(); 
-				Serial.println(cBut);
-				if(cBut == 1){		
-					i++;
-				}
-		  }
-		lcd.setCursor(10,10);		
-		lcd.println("ShowMenu(); of zoiets");
+	int i = 0;
+	while(i == 0){
+		nunchuck_get_data();
+		cBut = nunchuck_cbutton();
+		Serial.println(cBut);
+		if(cBut == 1){
+			i++;
+		}
 	}
+	lcd.setCursor(10,10);
+	lcd.println("ShowMenu(); of zoiets");
+}
 
 int highScore = -1;
-void highScores(int pl1, int pl2){	
+void highScores(int pl1, int pl2){
 	if(pl1 > highScore){
 		lcd.fillScreen(RGB(0,0,0));
 		lcd.setCursor(100,60);
@@ -680,7 +739,7 @@ void highScores(int pl1, int pl2){
 		//print letter met score;
 		highScore = pl1;
 		
-	}else if(pl2 > highScore){
+		}else if(pl2 > highScore){
 		lcd.fillScreen(RGB(0,0,0));
 		lcd.setCursor(100,60);
 		lcd.setTextSize(2);
@@ -692,7 +751,7 @@ void highScores(int pl1, int pl2){
 		//print letter met score;
 		highScore = pl2;
 	}
-} 
+}
 
 void getLetter(){
 	nunchuck_get_data();
@@ -734,6 +793,6 @@ void getLetter(){
 			done++;
 			char winner = letter[i];
 		}
-	}	
+	}
 
 }
