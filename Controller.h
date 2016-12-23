@@ -22,9 +22,9 @@
 #define levelSizeY 20
 #define levelSizeX 15
 
-typedef enum{
+typedef enum {
 	Start, Instructions, Highscores
-}menuItems;
+} menuItems;
 menuItems currentItem = Instructions;
 
 struct Bomb {
@@ -60,26 +60,29 @@ struct Bomberman {
 	uint16_t movementTimer = 0;
 } player1, player2;
 
+char player1Name[] = "player 1";
+char player2Name[] = "player 2";
+
 typedef enum {
 	EMPTY, WALL, BARREL, PLAYER, BOMB, EXPLOSION
 } object;
 
 object levelGrid[levelSizeX][levelSizeY] = {
-	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,  WALL,  WALL, WALL, WALL, WALL, WALL, WALL},
-	{WALL, EMPTY,  EMPTY,  EMPTY,  BARREL, BARREL,  EMPTY,  BARREL,  BARREL, EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  WALL,   BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, BARREL, BARREL, EMPTY,  BARREL,  EMPTY,  BARREL,  EMPTY,  BARREL,  BARREL, EMPTY,  EMPTY,  EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  WALL,   BARREL,  WALL,   BARREL,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,  BARREL, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, BARREL, EMPTY,  BARREL, EMPTY,  BARREL, EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  WALL,   EMPTY, WALL,   EMPTY,  WALL,   BARREL,  WALL,   BARREL, WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  BARREL, BARREL, EMPTY,  BARREL, EMPTY,  EMPTY, BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL,   BARREL, WALL,   EMPTY,  WALL,   EMPTY,  WALL,  BARREL,WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  BARREL, BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, BARREL,  WALL,   BARREL, WALL,   EMPTY,  WALL,   BARREL, WALL,   BARREL, WALL,   EMPTY,  WALL,  EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, EMPTY,  EMPTY,  BARREL, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  BARREL,  BARREL, EMPTY, EMPTY, WALL, EMPTY,EMPTY,EMPTY,EMPTY,WALL},
-	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,  WALL,  WALL, WALL, WALL, WALL, WALL, WALL}
+	{WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL},
+	{WALL, EMPTY, EMPTY, EMPTY, BARREL, BARREL, EMPTY, BARREL, BARREL, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, BARREL, BARREL, EMPTY, BARREL, EMPTY, BARREL, EMPTY, BARREL, BARREL, EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, WALL, BARREL, WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, BARREL, WALL, BARREL, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, BARREL, EMPTY, BARREL, EMPTY, BARREL, EMPTY, BARREL, EMPTY, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, WALL, BARREL, WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, BARREL, BARREL, EMPTY, BARREL, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, BARREL, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BARREL, BARREL, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, BARREL, WALL, BARREL, WALL, EMPTY, WALL, BARREL, WALL, BARREL, WALL, EMPTY, WALL, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, EMPTY, EMPTY, BARREL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BARREL, BARREL, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
+	{WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL}
 };
 
 MI0283QT9 lcd; //MI0283QT9 Adapter v1
@@ -116,14 +119,16 @@ void checkCollision(Bomberman *player);
 
 void gameOver();
 void highScores(int pl1, int pl2);
-void getLetter();
-void debugMap();
+void showHighScores();
+void setHighScore(int getScore, int i);
+void getLetter(int w);
 
+void debugMap();
 
 uint16_t timer;
 uint8_t secondsTimer = 10;
 
-void initMain(){
+void initMain() {
 	nunchuck_setpowerpins();
 	nunchuck_init(); // send the initilization
 
@@ -135,8 +140,8 @@ void initMain(){
 	showMenu();
 }
 
-void showMenu(){
-	lcd.fillScreen(RGB(0,0,0));
+void showMenu() {
+	lcd.fillScreen(RGB(0, 0, 0));
 	lcd.setTextColor(RGB(255, 255, 255), RGB(0, 0, 0));
 	lcd.setCursor(50, 40);
 	lcd.setTextSize(3);
@@ -149,43 +154,50 @@ void showMenu(){
 	lcd.setCursor(50, 130);
 	lcd.print("Highscores");
 	lcd.setTextSize(1);
-	lcd.setCursor(60,200);
+	lcd.setCursor(60, 200);
 	lcd.print("Press c to select");
 
 	int i = 0;
-	while(i == 0){
+	while (i == 0) {
+		_delay_ms(150);
 		nunchuck_get_data();
 		cBut = nunchuck_cbutton();
 		joyY = nunchuck_joyy();
-		Serial.println(cBut);
-		if(cBut == 1){
+		//Serial.println(cBut);
+		if (cBut == 1) {
 			i++;
 		}
-		if (joyY > 160){//up
-			if(currentItem == Start){
+		if (joyY > 160) {//up
+			if (currentItem == Start) {
 				currentItem = Highscores;
-				}else if(currentItem == Instructions){
+				} else if (currentItem == Instructions) {
 				currentItem = Start;
-				}else if(currentItem == Highscores){
+				} else if (currentItem == Highscores) {
 				currentItem = Instructions;
 			}
-			lcd.fillRect(240, 65, 40, 110, RGB(0,0,0));
+			lcd.fillRect(240, 65, 40, 110, RGB(0, 0, 0));
 			lcd.fillCircle(260, 75 + (currentItem * 30), 10, RGB(0, 255, 0));
-			_delay_ms(1000);
-			}else if(joyY < 100){//down
-			if(currentItem == Start){
+			//_delay_ms(250);
+			} else if (joyY < 100) {//down
+			if (currentItem == Start) {
 				currentItem = Instructions;
-				}else if(currentItem == Instructions){
+				} else if (currentItem == Instructions) {
 				currentItem = Highscores;
-				}else if(currentItem == Highscores){
+				} else if (currentItem == Highscores) {
 				currentItem = Start;
 			}
-			lcd.fillRect(240, 65, 40, 110, RGB(0,0,0));
+			lcd.fillRect(240, 65, 40, 110, RGB(0, 0, 0));
 			lcd.fillCircle(260, 75 + (currentItem * 30), 10, RGB(0, 255, 0));
-			_delay_ms(1000);
+			//_delay_ms(250);
 		}
 	}
-	initGame();
+	if (currentItem == Start) {
+		initGame();
+		} else if (currentItem == Instructions) {
+		showMenu();
+		} else if (currentItem == Highscores) {
+		showHighScores();
+	}
 }
 
 void initGame() {
@@ -232,7 +244,7 @@ void initGame() {
 }
 
 void gameLoop() {
-	
+
 	while (secondsTimer != 0) {
 		//if (secondsTimer != 0) {
 
@@ -288,9 +300,9 @@ void gameLoop() {
 			checkCollision(&player1);
 			checkCollision(&player2);
 		}
-		
 
-		
+
+
 	}
 	//debugMap();
 	gameOver();
@@ -612,10 +624,10 @@ void drawWall(int x, int y) {
 
 void drawPlayer(Bomberman *player) {
 	if (player->state == FALSE) {
-		lcd.fillRect(player->x * blockSize + 4 , player->y * blockSize + 3, 8, 8, RGB(255, 255, 0)); // body
+		lcd.fillRect(player->x * blockSize + 4, player->y * blockSize + 3, 8, 8, RGB(255, 255, 0)); // body
 		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 2, 8, 1, RGB(0, 0, 0)); // hat
 		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 1, 6, 1, RGB(0, 0, 0)); // hat
-		lcd.fillRect(player->x * blockSize + 5 , player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
+		lcd.fillRect(player->x * blockSize + 5, player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
 		lcd.fillRect(player->x * blockSize + 9, player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
 		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 6, 6, 1, RGB(0, 0, 0)); // smile
 		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 11, 8, 1, RGB(0, 0, 0)); // belt
@@ -624,10 +636,10 @@ void drawPlayer(Bomberman *player) {
 		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 12, 1, 3, RGB(0, 0, 0)); // left leg
 		lcd.drawRect(player->x * blockSize + 10, player->y * blockSize + 12, 1, 3, RGB(0, 0, 0)); // right leg
 		} else {
-		lcd.fillRect(player->x * blockSize + 4 , player->y * blockSize + 3, 8, 8, RGB(0, 0, 255)); // body
+		lcd.fillRect(player->x * blockSize + 4, player->y * blockSize + 3, 8, 8, RGB(0, 0, 255)); // body
 		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 2, 8, 1, RGB(0, 0, 0)); // hat
 		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 1, 6, 1, RGB(0, 0, 0)); // hat
-		lcd.fillRect(player->x * blockSize + 5 , player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
+		lcd.fillRect(player->x * blockSize + 5, player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
 		lcd.fillRect(player->x * blockSize + 9, player->y * blockSize + 4, 2, 1, RGB(0, 0, 0)); // eye
 		lcd.drawRect(player->x * blockSize + 5, player->y * blockSize + 6, 6, 1, RGB(0, 0, 0)); // smile
 		lcd.drawRect(player->x * blockSize + 4, player->y * blockSize + 11, 8, 1, RGB(0, 0, 0)); // belt
@@ -639,7 +651,7 @@ void drawPlayer(Bomberman *player) {
 }
 
 void drawEmpty(int x, int y) {
-	lcd.fillRect(x * blockSize, y * blockSize , blockSize, blockSize, RGB(255, 255, 255));
+	lcd.fillRect(x * blockSize, y * blockSize, blockSize, blockSize, RGB(255, 255, 255));
 }
 
 void drawExplosion(int x, int y) {
@@ -663,12 +675,12 @@ void drawTime() {
 	if (secondsTimer == 9) {
 		lcd.fillRect(263, 35, 10, 10, RGB(0, 0, 0));
 	}
-	
+
 
 	lcd.println(secondsTimer);
 }
 
-void drawScore(){
+void drawScore() {
 	int score1 = player2.deaths;
 	int score2 = player1.deaths;
 
@@ -676,19 +688,22 @@ void drawScore(){
 	lcd.setCursor(250, 55);
 	lcd.println("Score");
 	lcd.setCursor(240, 65);
-	lcd.println("speler 1");
+	lcd.println(player1Name);
 	lcd.setCursor(265, 77);
 	lcd.print(score1);
 
 	lcd.setCursor(250, 115);
 	lcd.println("Score");
 	lcd.setCursor(240, 125);
-	lcd.println("speler 2");
+	lcd.println(player2Name);
 	lcd.setCursor(265, 137);
 	lcd.print(score2);
 }
-void gameOver(){
-	lcd.fillScreen(RGB(0,0,0));
+
+
+
+void gameOver() {
+	lcd.fillScreen(RGB(0, 0, 0));
 	lcd.setCursor(80, 70);
 	lcd.setTextSize(5);
 	lcd.print("GAME");
@@ -696,107 +711,186 @@ void gameOver(){
 	lcd.print("OVER");
 	lcd.setTextSize(1);
 
-	_delay_ms(3000);
+	_delay_ms(2000);
 	int score1 = player2.deaths;
 	int score2 = player1.deaths;
 
 	highScores(score1, score2);
-	
-	lcd.fillScreen(RGB(0,0,0));
+
+	lcd.fillScreen(RGB(0, 0, 0));
 	lcd.setCursor(50, 35);
 	lcd.setTextSize(2);
-	lcd.print("Score player 1");
+	lcd.print("Score ");
+	lcd.print(player1Name);
 	lcd.setCursor(150, 70);
 	lcd.print(score1);
+
 	lcd.setCursor(50, 120);
-	lcd.print("Score player 2");
+	lcd.print("Score ");
+	lcd.print(player2Name);
 	lcd.setCursor(150, 155);
 	lcd.print(score2);
 	lcd.setTextSize(1);
-	lcd.setCursor(60,200);
+	lcd.setCursor(60, 200);
 	lcd.print("Press c to go to the menu");
 
 	int i = 0;
-	while(i == 0){
+	while (i == 0) {
 		nunchuck_get_data();
 		cBut = nunchuck_cbutton();
-		Serial.println(cBut);
-		if(cBut == 1){
+		_delay_ms(150);
+		if (cBut == 1) {
 			i++;
 		}
 	}
-	lcd.setCursor(10,10);
 	showMenu();
 }
+int highScore1 = 0;
+char nameHigh1[] = "";
+int highScore2 = 0;
+char nameHigh2[] = "";
+int highScore3 = 0;
+char nameHigh3[] = "";
 
-int highScore = -1;
-void highScores(int pl1, int pl2){
-	if(pl1 > highScore){
-		lcd.fillScreen(RGB(0,0,0));
-		lcd.setCursor(100,60);
+void showHighScores() {
+	lcd.fillScreen(RGB(0, 0, 0));
+	lcd.setCursor(30, 40);
+	lcd.setTextSize(3);
+	lcd.print("High Scores");
+
+	lcd.setTextSize(2);
+	lcd.setCursor(70, 80);
+	lcd.print("1.");
+	lcd.println(nameHigh1);
+	lcd.setCursor(70, 120);
+	lcd.print("2.");
+	lcd.println(nameHigh2);
+	lcd.setCursor(70, 160);
+	lcd.print("3.");
+	lcd.println(nameHigh3);
+
+	lcd.setCursor(210, 80);
+	lcd.println(highScore1);
+	lcd.setCursor(210, 120);
+	lcd.println(highScore2);
+	lcd.setCursor(210, 160);
+	lcd.println(highScore3);
+
+	lcd.setCursor(60, 200);
+	lcd.setTextSize(1);
+	lcd.print("Press c to go to the menu");
+
+	int k = 0;
+	while (k == 0) {
+		nunchuck_get_data();
+		cBut = nunchuck_cbutton();
+		_delay_ms(150);
+		if (cBut == 1) {
+			k++;
+			showMenu();
+		}
+	}
+}
+void highScores(int pl1Score, int pl2Score) {
+	if (pl1Score > highScore3) {
+		lcd.fillScreen(RGB(0, 0, 0));
+		lcd.setCursor(100, 60);
 		lcd.setTextSize(2);
-		lcd.print("PLAYER 1");
-		lcd.setCursor(35,100);
+		lcd.print(player1Name);
+		lcd.setCursor(35, 100);
 		lcd.print("BROKE THE RECORD");
-		_delay_ms(3000);
-		getLetter();
-		//print letter met score;
-		highScore = pl1;
-		
-		}else if(pl2 > highScore){
-		lcd.fillScreen(RGB(0,0,0));
-		lcd.setCursor(100,60);
+		_delay_ms(2000);
+		getLetter(pl1Score);
+
+		} else if (pl2Score > highScore3) {
+		lcd.fillScreen(RGB(0, 0, 0));
+		lcd.setCursor(100, 60);
 		lcd.setTextSize(2);
-		lcd.print("PLAYER 2");
-		lcd.setCursor(35,100);
+		lcd.print(player2Name);
+		lcd.setCursor(35, 100);
 		lcd.print("BROKE THE RECORD");
-		_delay_ms(3000);
-		getLetter();
-		//print letter met score;
-		highScore = pl2;
+		_delay_ms(2000);
+		getLetter(pl2Score);
 	}
 }
 
-void getLetter(){
+void getLetter(int w) {
+	int score1 = player2.deaths;
+	int score2 = player1.deaths;
 	nunchuck_get_data();
 	cBut = nunchuck_cbutton();
 	joyY = nunchuck_joyy();
-	
-	char letter[26];
-	strcpy(letter, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-	
-	lcd.fillScreen(RGB(0,0,0));
+	lcd.fillScreen(RGB(0, 0, 0));
 	lcd.setCursor(45, 60);
 	lcd.print("Choose a letter");
 
 	int i = 0;
 	int done = 0;
-	while(done == 0){
+	while (done == 0) {
 		_delay_ms(150);
 		nunchuck_get_data();
 		cBut = nunchuck_cbutton();
 		joyY = nunchuck_joyy();
+		_delay_ms(150);
 		if (joyY > 160)// to the top
 		{
-			if (i > 26){
+			if (i > 24) {
 				i = 0;
+				} else {
+				i++;
 			}
-			i++;
 		} else if (joyY < 100) // to the bottom
 		{
-			if (i < 0){
-				i = 26;
+			if (i < 1) {
+				i = 25;
+				} else {
+				i--;
 			}
-			i--;
 		}
-		lcd.setCursor(150,100);
+		lcd.setCursor(150, 100);
 		lcd.setTextSize(4);
-		lcd.println(letter[i]);
-		
-		if(cBut == 1){
+		lcd.println((char) (i + 'A')); // take the i-st letter
+		if (cBut == 1) {
+			if (w == score1) {
+				*player1Name = i + 'A';
+				player1Name[1] = 0;
+				Serial.println(player1Name);
+				
+				} else if (w == score2) {
+				*player2Name = i + 'A';
+				player2Name[1] = 0;
+				Serial.println(player2Name);
+			}
+			setHighScore(w, i);
 			done++;
-			char winner = letter[i];
 		}
 	}
+}
 
+void setHighScore(int getScore, int i) {
+	Serial.println(getScore);
+	Serial.println(highScore1);
+	Serial.println(highScore2);
+	Serial.println(highScore3);
+		//!!!!!!!!!!!!!!!!GETSCORE==HIGHSCORE!!!!!!!!!!!!!!!!
+		
+		if (getScore > highScore1) {
+			highScore1 = getScore;
+			*nameHigh1 = i + 'A';
+			nameHigh1[1] = 0;
+			} else if (getScore > highScore2 && getScore < highScore1) {
+			highScore2 = getScore;
+			//nameHigh2[0] = i+'A';
+			*nameHigh2 = i + 'A';
+			nameHigh2[1] = 0;
+			} else if (getScore > highScore3 && getScore < highScore2) {
+			highScore3 = getScore;
+			//nameHigh3[0] = i+'A';
+			*nameHigh3 = i + 'A';
+			nameHigh3[1] = 0;
+		}	
+		Serial.println();
+			Serial.println(highScore1);
+			Serial.println(highScore2);
+			Serial.println(highScore3);
 }
