@@ -1,18 +1,5 @@
-#include <avr/io.h>
-#include <util/delay.h>
-#include <Arduino.h>
+#include "receive.h"
 
-void led1();
-void led2();
-void own_init();
-uint8_t readValue();
-
-char data = 0;
-uint8_t startCollecting;
-volatile uint16_t measuredTime;
-volatile uint16_t timer1 = 0;
-volatile uint8_t sensor = 0;
-volatile uint8_t count = 0;
 int main(void){
 	IR_setup();
 	while(1){
@@ -20,8 +7,70 @@ int main(void){
 }
 
 uint8_t readValue(){
+/*	Serial.println(measuredTime);*/
+
+//measuredTime decides what kind of signal we just received
+//this signal can be a start, stop, 1 or 0 bit
+//only start processing measuredTime if we actually received a start bit
+
+	if(measuredTime >= 155 && measuredTime <= 170){					//start bit
+		startCollecting = 1;
+		/*Serial.println("(");*/
+		data = 0;
+	}
+	if(startCollecting > 0){
+		if(measuredTime >= 110 && measuredTime < 155){				//'1' bit
+			data <<= 1;												//shift in a new bit
+			data |= 0x01;											//set the newly added bit to 1
+			/*Serial.print("1");*/
+			} else if(measuredTime < 110){							//'0' bit
+			data <<= 1;												//shift in a new 0 bit
+			/*Serial.print("0");*/
+			} else if(measuredTime > 170 && measuredTime < 300){	//stop bit
+			startCollecting = 0;									//wait for a new start signal, discard every other signal
+			Serial.print(data);
+			Serial.print("\n");										
+			return data;											//received byte
+		}
+	}
+}
+
+void IR_setup(){
+	cli();
+	Serial.begin(9600);
 	
-//			Deze werkt
+	/*Pin change interrupt*/
+	PCICR |= (1 << PCIE2);					//pin group for PORTD
+	PCMSK2 |= (1 << PCINT19);				//PIND3 / digital pin 3
+	EICRA = (1 << ISC11) | (1 << ISC00);	//create interrupt on any logical change
+
+	/*Timer*/
+	TCCR2A = (1 << COM2A0) | (1 << WGM21) | (1 << WGM20);	//listen for interrupts on compare match a
+	TCCR2B |= (1 << WGM22) | (1 << CS20);					//no prescaler
+	OCR2A = 40; // 210/40									//210 corresponds to 13 microseconds
+	TIMSK2 |= (1 << OCIE2A);								
+	sei();
+}
+
+//This interrupt triggers if there is any change coming from the sensor
+ISR(PCINT2_vect){
+	if(PIND & (1 << PIND3)){								//check what state the sensor is in, rising or falling edge
+		measuredTime = timer;								//rising edge means we have a new bit incoming, so we timestamp the value our timer is on
+		} else {											//falling edge means the bit is completed, so we can look at our current time
+		if(measuredTime > timer){							//if measuredTime is bigger the timer has reached it's maximum and overflowed
+			measuredTime = 0xFFFF - measuredTime + timer;	//our measuredTime is off by 0xFFFF or 65535
+			} else {
+			measuredTime = timer - measuredTime;			//elapsed time
+		}
+		readValue();
+	}
+}
+ISR(TIMER2_COMPA_vect){
+	timer++;
+}
+
+uint8_t readValueOld(){
+	/*Deze werkt*/
 	if(measuredTime >= 145 && measuredTime <= 200){
 		startCollecting = 1;
 	}
@@ -35,88 +84,8 @@ uint8_t readValue(){
 			startCollecting = 0;
 			Serial.print(data);
 			Serial.print("\n");
+			data = 0;
 			return data;
 		}
-
-
-// 	if(measuredTime >= 140 && measuredTime <= 160){
-// 		startCollecting = 1;
-// /*		Serial.println("Start");*/
-// 	}
-// 	if(startCollecting > 0){
-// 		if(measuredTime >= 110 && measuredTime < 140){
-// 			data <<= 1;
-// 			data |= 0x01;
-// /*			Serial.println("EEN");*/
-// 			} else if(measuredTime < 110){
-// 			data <<= 1;
-// /*			Serial.println("0");*/
-// 			} else if(measuredTime > 160 && measuredTime < 260){
-// 			startCollecting = 0;
-// // 			Serial.print(data, HEX);
-// // 			Serial.print("\n");
-// 			return data;
-// 		}
- 	}
-}
-
-void IR_setup(){
-	cli();
-	Serial.begin(9600);
-	//Pins
-	DDRB = (1 << PORTB2) | (1 << PORTB1) | (1 << PORTB3) | (1 << PORTB5);
-/*	DDRD |= (1 << PORTD3);*/
-	
-	//Pin change interrupt
-	PCICR |= (1 << PCIE2);
-/*	PCMSK2 |= (1 << PCINT19);*/
-	EIMSK |= (1 << INT1);
-	EICRA |=  (1 << ISC10);
-
-	//Timer
-	TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-	TCCR2B |= (1 << WGM22) | (1 << CS20);
-	OCR2A = 40;
-	TIMSK2 |= (1 << OCIE2A);
-	sei();
-}
-ISR(INT1_vect){
-	sensor = PINB & (1 << PINB0);
-	Serial.println("interrupt");
-	count++;
-	Serial.println(count);
-	if(sensor > 0){
-		measuredTime = timer1;
-		} else {
-		if(measuredTime > timer1){
-			measuredTime = 65535 - measuredTime + timer1;
-			} else {
-			measuredTime = timer1 - measuredTime;
-		}
-		readValue();
 	}
 }
-ISR(TIMER2_COMPA_vect){
-	timer1++;
-}
-
-// void led1(){
-// 	PORTB |= (1 << PINB2);
-// 	PORTB &= ~(1 << PINB1);
-// 	PORTB &= ~(1 << PINB3);
-// 	_delay_ms(100);
-// }
-// 
-// void led2(){
-// 	PORTB |= (1 << PINB1);
-// 	PORTB &= ~(1 << PINB2);
-// 	PORTB &= ~(1 << PINB3);
-// 	_delay_ms(100);
-// }
-// 
-// void led3(){
-// 	PORTB |= (1 << PINB3);
-// 	PORTB &= ~(1 << PINB2);
-// 	PORTB &= ~(1 << PINB1);
-// 	_delay_ms(100);
-//  }
