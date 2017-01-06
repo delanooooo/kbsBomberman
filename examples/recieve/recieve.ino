@@ -9,9 +9,9 @@ int main(void){
 uint8_t readValue(){
 /*	Serial.println(measuredTime);*/
 
-//measuredTime decides what kind of signal we just received
-//this signal can be a start, stop, 1 or 0 bit
-//only start processing measuredTime if we actually received a start bit
+	//measuredTime decides what kind of signal we just received
+	//this signal can be a start, stop, 1 or 0 bit
+	//only start processing measuredTime if we actually received a start bit
 
 	if(measuredTime >= 155 && measuredTime <= 170){					//start bit
 		startCollecting = 1;
@@ -29,7 +29,7 @@ uint8_t readValue(){
 			} else if(measuredTime > 170 && measuredTime < 300){	//stop bit
 			startCollecting = 0;									//wait for a new start signal, discard every other signal
 			Serial.print(data);
-			Serial.print("\n");										
+			Serial.print("\n");
 			return data;											//received byte
 		}
 	}
@@ -48,7 +48,7 @@ void IR_setup(){
 	TCCR2A = (1 << COM2A0) | (1 << WGM21) | (1 << WGM20);	//listen for interrupts on compare match a
 	TCCR2B |= (1 << WGM22) | (1 << CS20);					//no prescaler
 	OCR2A = 40; // 210/40									//210 corresponds to 13 microseconds
-	TIMSK2 |= (1 << OCIE2A);								
+	TIMSK2 |= (1 << OCIE2A);
 	sei();
 }
 
