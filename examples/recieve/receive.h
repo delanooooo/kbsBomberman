@@ -9,7 +9,7 @@ uint8_t readValueOld();
 uint8_t readValue();
 
 //Variables
-char data = 0;
+char data;
 uint8_t startCollecting;
 volatile uint16_t measuredTime;
 volatile uint16_t timer = 0;
