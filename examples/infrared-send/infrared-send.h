@@ -9,12 +9,13 @@ volatile uint8_t  nbit = 0;
 volatile uint8_t  data = 0;
 
 //  Defines 
-//  Amount of microseconds set to send a specific signal
-#define START_SPACE    24 
-#define STOP_SPACE     32
-#define ONE_SPACE      18
-#define ZERO_SPACE      4
-#define BIT_SPACE      38
+//  Amount of cycles set to send a specific signal
+#define START_SPACE    65 
+#define STOP_SPACE     90
+#define ONE_SPACE      40
+#define ZERO_SPACE     20
+
+#define BIT_SPACE      20
 
 #define SEND_START   sendtime = timer + START_SPACE
 #define SEND_STOP    sendtime = timer + STOP_SPACE

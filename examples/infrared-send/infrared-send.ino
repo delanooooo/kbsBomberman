@@ -21,15 +21,11 @@ int main(void) {
     IR_ENABLE;
     PC_ENABLE;
 
-    for(uint8_t i=0;i<15;i++) sendData(0x41);
-
     for(;;){
+        queueAdd(queue,0x41);
+        _delay_ms(10);
         queueCheck(queue);
-        _delay_ms(50);
-        queueAdd(queue, 0x37);
-        _delay_ms(50);
-        queueAdd(queue, 0x36);
-        _delay_ms(50);
+        _delay_ms(10);
     }
 }
 
@@ -62,8 +58,8 @@ ISR(PCINT0_vect) {
     if(data) {
         if(PINB & (1 << PINB4)) {
             IR_ENABLE;
-            SEND_BUFFER;
-            if(!nbit) data = 0x00;
+            if(nbit) SEND_BUFFER;
+            else data = 0x00;
         }
         else {
             IR_DISABLE;
@@ -71,16 +67,11 @@ ISR(PCINT0_vect) {
                 if(data & nbit) SEND_ONE;
                 else            SEND_ZERO;
             } else              SEND_STOP;
-
+  
             nbit >>= 1;
         }
     }
-    else {
-        if(!(PINB & (1 << PINB4))) {
-            PORTB ^= (1 << PINB4);
-        }
-    }
-}
+}  
 
 void sendData(uint8_t d){
     IR_DISABLE;
