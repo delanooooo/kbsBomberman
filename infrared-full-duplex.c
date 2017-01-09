@@ -1,22 +1,18 @@
 #include "infrared-full-duplex.h"
 
-typedef struct queueSend {
-    uint8_t data[QUEUE_SIZE];
-    uint8_t front;
-    uint8_t count;
-} queueSend;
+//  Variables
+volatile uint16_t datatimer = 0;
+volatile uint16_t sendtime = 0;
+volatile uint16_t measuredTime = 0;
 
-void queueAdd(queueSend *q, uint8_t d);
-void queueCheck(queueSend *q);
+char receivedData;
+uint8_t startCollecting;
 
-queueSend *queue;
+volatile uint8_t nbit = 0;
+volatile uint8_t sentData = 0;
 
 /*
 int main(void){
-    queue = (queueSend *) malloc(sizeof(queueSend));
-    queue->front = 0;
-    queue->count = 0;
-
     ir_setup();
 
     IR_ENABLE;
@@ -28,24 +24,6 @@ int main(void){
     }
 }
 */
-
-void queueAdd(queueSend *q, uint8_t d) {
-    if(q->count < QUEUE_SIZE) {
-        if((q->front + q->count) < QUEUE_SIZE) q->data[q->front + q->count] = d;
-        else q->data[q->front + q->count-QUEUE_SIZE] = d;
-    }
-    q->count++;
-}
-
-void queueCheck(queueSend *q) {
-    if(!sentData) {
-        sendData(q->data[q->front]);
-        q->data[q->front] = 0x57;
-        q->count--;
-        if(q->front < (QUEUE_SIZE-1)) q->front += 1;
-        else q->front = 0;
-    }
-}
 
 void sendData(uint8_t d){
     IR_DISABLE;
@@ -101,6 +79,55 @@ uint8_t readValueOld(){
             receivedData = 0;
             return receivedData;
         }
+    }
+}
+
+// Interrupt service routines
+ISR(TIMER2_COMPA_vect){
+    datatimer++;
+    if(datatimer > sendtime) {
+        PORTB ^= (1 << PINB4);
+    }
+}
+
+ISR(PCINT0_vect) {
+    if(sentData) {
+        if(PINB & (1 << PINB4)) {
+            IR_ENABLE;
+            if(nbit) SEND_BUFFER;
+            else sentData = 0x00;
+        }
+        else {
+            IR_DISABLE;
+            if(nbit) {
+                if(sentData & nbit) SEND_ONE;
+                else            SEND_ZERO;
+            } else              SEND_STOP;
+
+            nbit >>= 1;
+        }
+    }
+}
+
+//This interrupt triggers if there is any change coming from the sensor
+ISR(PCINT2_vect){
+    //check what state the sensor is in, rising or falling edge
+    if(PIND & (1 << PIND3)){
+        //rising edge means we have a new bit incoming,
+        //so we timestamp the value our datatimer is on
+        measuredTime = datatimer;
+
+    } else {
+        //falling edge means the bit is completed,
+        //so we can look at our current time
+        //if measuredTime is bigger the datatimer has reached it's maximum and overflowed
+        if(measuredTime > datatimer){
+            //our measuredTime is off by 0xFFFF or 65535
+            measuredTime = 0xFFFF - measuredTime + datatimer;
+        } else {
+            measuredTime = datatimer - measuredTime; //elapsed time
+        }
+        readValue();
     }
 }
 
