@@ -1,4 +1,4 @@
-#include <avr/io.h>
+#pragma once
 
 extern volatile uint16_t datatimer;
 extern volatile uint16_t sendtime;
