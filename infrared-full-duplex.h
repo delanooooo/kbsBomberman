@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
 
 //  Variables
 volatile uint16_t datatimer = 0;
@@ -40,6 +39,5 @@ volatile uint8_t sentData = 0;
 void ir_setup();
 void sendData(uint8_t data);
 
-void IR_setup();
 uint8_t readValueOld();
 uint8_t readValue();
