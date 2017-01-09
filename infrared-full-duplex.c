@@ -77,8 +77,8 @@ uint8_t readValue(){
         } else if(measuredTime > 80 && measuredTime < 110){ //stop bit
             //wait for a new start signal, discard every other signal
             startCollecting = 0;
-            Serial.print(receivedData , HEX);
-            Serial.print("\n");
+//          Serial.print(receivedData , HEX);
+//          Serial.print("\n");
             return receivedData;    //received byte
         }
     }
@@ -144,8 +144,8 @@ uint8_t readValueOld(){
             receivedData <<= 1;
         } else if(measuredTime > 200 && measuredTime < 260){
             startCollecting = 0;
-            Serial.print(receivedData );
-            Serial.print("\n");
+//          Serial.print(receivedData );
+//          Serial.print("\n");
             receivedData = 0;
             return receivedData;
         }
