@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Wire.h>;
-#include <MI0283QT9.h>;
+#include <Wire.h>
+#include <MI0283QT9.h>
+#include <avr/interrupt.h>
 #include "nunchuck_funcs.h"
 #include "infrared-full-duplex.h"
 
