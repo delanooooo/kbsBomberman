@@ -141,8 +141,8 @@ void ir_setup(){
     PCMSK2 |= (1 << PCINT19); //PIND3 / digital pin 3
 
     // moet nog naar gekeken worden vvvvvv
-    EICRA = (1 << ISC11) | (1 << ISC00); //create interrupt on any logical change
-    EICRA |= (1 << ISC10);
+    //EICRA = (1 << ISC11) | (1 << ISC00); //create interrupt on any logical change
+    //EICRA |= (1 << ISC10);
     // moet nog naar gekeken worden ^^^^^^
 
     /*Timer*/
