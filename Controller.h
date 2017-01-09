@@ -125,6 +125,8 @@ void initMain() {
 	lcd.begin();
 	lcd.led(225);
 
+    ir_setup();
+
 	Serial.begin(9600); // serial monitor
 	showMenu();
 }
