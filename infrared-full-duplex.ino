@@ -8,6 +8,7 @@ volatile uint16_t measuredTime = 0;
 char receivedData;
 uint8_t startCollecting;
 
+
 volatile uint8_t nbit = 0;
 volatile uint8_t sentData = 0;
 

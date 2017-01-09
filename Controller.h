@@ -9,7 +9,8 @@
 
 extern char player1Name[];
 extern char player2Name[];
-
+extern uint8_t sendValue;
+extern uint8_t receivedInstruction;
 extern int highScore1;
 extern char nameHigh1[];
 extern int highScore2;

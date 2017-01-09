@@ -149,7 +149,8 @@ void initGame() {
 	}
 	gameLoop();
 }
-
+uint8_t sendValue;
+uint8_t receivedInstruction;
 void gameLoop() {
 
 	while (secondsTimer != 0) {
@@ -160,6 +161,8 @@ void gameLoop() {
 		joyX = nunchuck_joyx();
 		joyY = nunchuck_joyy();
 
+
+		sendValue = 0;
 		_delay_ms(10);
 		//Serial.print(joyX);
 		//Serial.print("  ");
@@ -168,30 +171,59 @@ void gameLoop() {
 		if (joyX == 255 && joyY == 255) {
 			continue;
 		}
-
+		//player1 movement
 		if (timer >= player1.movementTimer + 20) {
 			if (zBut == 1) {
 				placeBomb(&player1);
-				placeBomb(&player2);
+				sendValue |= (1 << 7);
 			}
 			if (joyX < 100)//to the left
 			{
 				walkLeft(&player1);
-				walkLeft(&player2);
+				sendValue |= (1 << 3);
 			} else if (joyX > 160) // to the right
 			{
 				walkRight(&player1);
-				walkRight(&player2);
+				sendValue |= (1 << 1);
 			} else if (joyY > 160)// to the top
 			{
 				walkUp(&player1);
-				walkUp(&player2);
+				sendValue |= (1 << 0);
 			} else if (joyY < 100) // to the bottom
 			{
 				walkDown(&player1);
-				walkDown(&player2);
+				sendValue |= (1 << 2);
+			}
+			if(sendValue){
+			sendData(sendValue);
 			}
 			player1.movementTimer = timer;
+		}
+		
+		receivedInstruction = 0;
+		//player2 movement
+		readValue();
+		if(!startCollecting){
+		receivedInstruction = receivedData;
+		}
+		if (timer >= player1.movementTimer + 20) {
+			if (receivedInstruction &= (1 << 7)) {
+				placeBomb(&player2);
+			}
+			if (receivedInstruction &= (1 << 3))//to the left
+			{
+				walkLeft(&player2);
+			} else if (receivedInstruction &= (1 << 1)) // to the right
+			{
+				walkRight(&player2);
+			} else if (receivedInstruction &= (1 << 0))// to the top
+			{
+				walkUp(&player2);
+			} else if (receivedInstruction &= (1 << 2)) // to the bottom
+			{
+				walkDown(&player2);
+			}
+			player2.movementTimer = timer;
 		}
 
 		checkBombs(&player1);
