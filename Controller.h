@@ -1,22 +1,9 @@
 #pragma once
 
 #include <Wire.h>
-//#include <SPI.h>
-//#include <digitalWriteFast.h>
-//#include <GraphicsLib.h>
-//#include <SSD1331.h>
-//#include <S65L2F50.h>
-//#include <S65LPH88.h>
-//#include <S65LS020.h>
-//#include <MI0283QT2.h>
 #include <MI0283QT9.h>;
-//#include <DisplaySPI.h>
-//#include <DisplayI2C.h>
 #include "nunchuck_funcs.h"
-//#include <avr/io.h>
-//#include <stdlib.h>
-//#include <stdint.h>
-// lcd 240*360
+#include "infrared-full-duplex.h"
 
 #define blockSize 16
 #define levelSizeY 20
