@@ -1,8 +1,7 @@
 #include "Controller.h"
 
 void setup(){
-	initController();
-	gameLoop();
+	initMain();
 }
 
 void loop(){
