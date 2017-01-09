@@ -85,8 +85,8 @@ uint8_t readValue(){
 }
 
 ISR(TIMER2_COMPA_vect){
-    timer++;
-    if(timer > sendtime) {
+    datatimer++;
+    if(datatimer > sendtime) {
         PORTB ^= (1 << PINB4);
     }
 }
@@ -115,18 +115,18 @@ ISR(PCINT2_vect){
     //check what state the sensor is in, rising or falling edge
     if(PIND & (1 << PIND3)){
         //rising edge means we have a new bit incoming,
-        //so we timestamp the value our timer is on
-        measuredTime = timer;
+        //so we timestamp the value our datatimer is on
+        measuredTime = datatimer;
 
     } else {
         //falling edge means the bit is completed,
         //so we can look at our current time
-        //if measuredTime is bigger the timer has reached it's maximum and overflowed
-        if(measuredTime > timer){
+        //if measuredTime is bigger the datatimer has reached it's maximum and overflowed
+        if(measuredTime > datatimer){
             //our measuredTime is off by 0xFFFF or 65535
-            measuredTime = 0xFFFF - measuredTime + timer;
+            measuredTime = 0xFFFF - measuredTime + datatimer;
         } else {
-            measuredTime = timer - measuredTime; //elapsed time
+            measuredTime = datatimer - measuredTime; //elapsed time
         }
         readValue();
     }
@@ -170,7 +170,7 @@ void ir_setup(){
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
     TCCR2B |= (1 << WGM22) | (1 << CS20); //no prescaler
     OCR2A = 210; //210 corresponds to 13 microseconds
-    TIMSK2 |= (1 << OCIE2A); //enable timer compare match interupt
+    TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
 
     DDRB |= (0 << PINB4);
     DDRB |= (1 << PINB3); // infraredpin

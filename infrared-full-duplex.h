@@ -2,7 +2,7 @@
 #include <util/delay.h>
 
 //  Variables
-volatile uint16_t timer = 0;
+volatile uint16_t datatimer = 0;
 volatile uint16_t sendtime = 0;
 volatile uint16_t measuredTime = 0;
 
@@ -21,11 +21,11 @@ volatile uint8_t sentData = 0;
 
 #define BIT_SPACE      20
 
-#define SEND_START   sendtime = timer + START_SPACE
-#define SEND_STOP    sendtime = timer + STOP_SPACE
-#define SEND_BUFFER  sendtime = timer + BIT_SPACE
-#define SEND_ONE     sendtime = timer + ONE_SPACE
-#define SEND_ZERO    sendtime = timer + ZERO_SPACE
+#define SEND_START   sendtime = datatimer + START_SPACE
+#define SEND_STOP    sendtime = datatimer + STOP_SPACE
+#define SEND_BUFFER  sendtime = datatimer + BIT_SPACE
+#define SEND_ONE     sendtime = datatimer + ONE_SPACE
+#define SEND_ZERO    sendtime = datatimer + ZERO_SPACE
 
 #define IR_DISABLE DDRB &= ~(1 << PINB3)
 #define IR_ENABLE  DDRB |= (1 << PINB3)
