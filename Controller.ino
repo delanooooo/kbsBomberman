@@ -42,7 +42,7 @@ void initMain() {
 
 	ir_setup();
 
-	Serial.begin(9600); // serial monitor
+	//Serial.begin(9600); // serial monitor
 	showMenu();
 }
 
@@ -535,10 +535,10 @@ void checkCollision(Bomberman *player) {
 void debugMap() {
 	for (int y = 0; y < levelSizeY; y++) {
 		for (int x = 0; x < levelSizeX; x++) {
-			Serial.print(levelGrid[y][x]);
-			Serial.print(" | ");
+			//Serial.print(levelGrid[y][x]);
+			//Serial.print(" | ");
 		}
-		Serial.println("");
+		//Serial.println("");
 	}
 }
 
