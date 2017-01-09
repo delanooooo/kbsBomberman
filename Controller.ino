@@ -3,6 +3,7 @@
 char player1Name[] = "player 1";
 char player2Name[] = "player 2";
 
+Bomberman player1, player2;
 
 object levelGrid[levelSizeX][levelSizeY] = {
 	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,  WALL,   WALL, WALL,  WALL,  WALL,  WALL,  WALL},

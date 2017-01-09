@@ -21,7 +21,45 @@
 
 //
 //
+void initMain();
+void showMenu();
+void initGame();
+void gameLoop();
+void BombermanInit();
+void placeBomb(Bomberman *player);
+void checkBombs(Bomberman *player);
+void explodeBomb(int radius, int x, int y);
+Bomb * findBombOnLocation(int x, int y);
+bool createExplosion(int x, int y);
+void initExplosion(int x, int y);
+void checkExplosions();
+void walkLeft(Bomberman *player);
+void walkRight(Bomberman *player);
+void walkDown(Bomberman *player);
+void walkUp(Bomberman *player);
+void checkCollision(Bomberman *player);
+void debugMap();
+void drawBomb(int x, int y);
+void drawBarrel(int x, int y);
+void drawWall(int x, int y);
+void drawPlayer(Bomberman *player);
+void drawEmpty(int x, int y);
+void drawExplosion(int x, int y);
+void drawTime();
+void drawScore();
+void gameOver();
+void showHighScores();
+void highScores(int pl1Score, int pl2Score);
+void getLetter(int highScore);
+void setHighScore(int getScore, int i);
+void showInstr();
+void sendData(uint8_t d);
+uint8_t readValue();
+uint8_t readValueOld();
+void ir_setup();
 
 #include "pins_arduino.h" 
 #include "arduino.h"
 #include "kbsBomberman.ino"
+#include "Controller.ino"
+#include "infrared-full-duplex.ino"

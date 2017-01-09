@@ -1,5 +1,7 @@
 #pragma once
 
+#include <avr/io.h>
+#include <MI0283QT9.h>
 
 #define blockSize 16
 #define levelSizeY 20
@@ -19,7 +21,7 @@ typedef enum {
 	FALSE, TRUE
 } bool;
 
-struct Bomberman {
+typedef struct Bomberman {
 	int x;
 	int y;
 	int bombRadius;
@@ -30,7 +32,7 @@ struct Bomberman {
 	int deaths;
 	uint16_t invinsibleTimer;
 	uint16_t movementTimer;
-} player1, player2;
+};
 
 struct Bomb {
 	int x;
