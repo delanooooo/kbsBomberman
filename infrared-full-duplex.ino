@@ -153,6 +153,6 @@ void ir_setup(){
     TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
 
     DDRB |= (0 << PINB4);
-    DDRB |= (1 << PINB3); // infraredpin
+    DDRB |= (1 << PINB5); // infraredpin
     sei();
 }
