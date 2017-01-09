@@ -1,10 +1,5 @@
 #pragma once
 
-#include <Wire.h>
-#include <MI0283QT9.h>
-#include <avr/interrupt.h>
-#include "nunchuck_funcs.h"
-#include "infrared-full-duplex.h"
 
 #define blockSize 16
 #define levelSizeY 20
@@ -20,6 +15,10 @@ extern char nameHigh2[];
 extern int highScore3;
 extern char nameHigh3[];
 
+typedef enum {
+	FALSE, TRUE
+} bool;
+
 struct Bomberman {
 	int x;
 	int y;
@@ -28,9 +27,9 @@ struct Bomberman {
 	int bombsPlaced;
 	struct Bomb *head;
 	bool state;
-	int deaths = 0;
-	uint16_t invinsibleTimer = 0;
-	uint16_t movementTimer = 0;
+	int deaths;
+	uint16_t invinsibleTimer;
+	uint16_t movementTimer;
 } player1, player2;
 
 struct Bomb {
@@ -53,10 +52,6 @@ typedef enum {
 	Start, Instructions, Highscores
 } menuItems;
 extern menuItems currentItem;
-
-typedef enum {
-	FALSE, TRUE
-} bool;
 
 typedef enum {
 	EMPTY, WALL, BARREL, PLAYER, BOMB, EXPLOSION
