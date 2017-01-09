@@ -20,7 +20,7 @@ extern char nameHigh2[];
 extern int highScore3;
 extern char nameHigh3[];
 
-struct Bomberman {
+typedef struct Bomberman {
 	int x;
 	int y;
 	int bombRadius;
@@ -33,21 +33,21 @@ struct Bomberman {
 	uint16_t movementTimer = 0;
 } player1, player2;
 
-struct Bomb {
+typedef struct Bomb {
 	int x;
 	int y;
 	uint16_t detonateTime;
 	struct Bomb *next;
 };
 
-struct ExplosionTile {
+typedef struct ExplosionTile {
 	int x;
 	int y;
 	uint16_t removeTime;
 	struct ExplosionTile *next;
 };
 
-struct ExplosionTile *ExplosionHead;
+typedef struct ExplosionTile *ExplosionHead;
 
 typedef enum {
 	Start, Instructions, Highscores
