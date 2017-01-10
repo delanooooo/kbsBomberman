@@ -33,6 +33,15 @@ menuItems currentItem = Instructions;
 
 
 void initMain() {
+    TCCR1B = 0;
+
+    TCCR1B = (1 << CS11) | (1 << CS10);
+    TCCR1A |= (1 << WGM10);
+
+    ADCSRA = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADEN);
+
+    UCSR0B = 0;
+
 	nunchuck_setpowerpins();
 	nunchuck_init(); // send the initilization
 

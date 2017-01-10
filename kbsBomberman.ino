@@ -1,4 +1,3 @@
-
 #include <avr/interrupt.h>
 
 #include "infrared-full-duplex.h"
@@ -8,13 +7,15 @@
 #include "Controller.h"
 
 int main(void){
-	initMain();
+    initMain();
 }
+
 /*
-void setup(){
-	initMain();
-}
+   void setup(){
+   initMain();
+   }
 
-void loop(){
+   void loop(){
 
-}*/
+   }
+ */
