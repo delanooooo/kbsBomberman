@@ -60,7 +60,7 @@ void initMain() {
 
     ADCSRA |= (1 << ADEN);
 
-    //UCSR0B = 0;
+    UCSR0B = 0;
 
 
     nunchuck_setpowerpins();
@@ -151,7 +151,7 @@ void initGame() {
     OCR2A = 156; //approximately every 10 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable timer compare match interupt
 
-    secondsTimer = 15;
+    secondsTimer = 255;
 
 
     BombermanInit(); //init player1 & player2
@@ -209,27 +209,27 @@ void gameLoop() {
         if (timer >= player1.movementTimer + 20) {
             if (zBut == 1) {
                 placeBomb(&player1);
-                sendValue |= (1 << 7);
+                sendValue |= 0x80;
             }
             if (joyX < 100)//to the left
             {
                 walkLeft(&player1);
-                sendValue |= (1 << 3);
+                sendValue |= 0x08;
             } else if (joyX > 160) // to the right
             {
                 walkRight(&player1);
-                sendValue |= (1 << 1);
+                sendValue |= 0x02;
             } else if (joyY > 160)// to the top
             {
                 walkUp(&player1);
-                sendValue |= (1 << 0);
+                sendValue |= 0x01;
             } else if (joyY < 100) // to the bottom
             {
                 walkDown(&player1);
-                sendValue |= (1 << 2);
+                sendValue |= 0x04;
             }
             if(sendValue){
-                sendData(0x41);
+                sendData(sendValue);
             }
             player1.movementTimer = timer;
         }
@@ -241,19 +241,19 @@ void gameLoop() {
             receivedInstruction = receivedData;
         }
         if (timer >= player1.movementTimer + 20) {
-            if (receivedInstruction &= (1 << 7)) {
+            if (receivedInstruction &= 0x80) {
                 placeBomb(&player2);
             }
-            if (receivedInstruction &= (1 << 3))//to the left
+            if (receivedInstruction &= 0x08)//to the left
             {
                 walkLeft(&player2);
-            } else if (receivedInstruction &= (1 << 1)) // to the right
+            } else if (receivedInstruction &= 0x02) // to the right
             {
                 walkRight(&player2);
-            } else if (receivedInstruction &= (1 << 0))// to the top
+            } else if (receivedInstruction &= 0x01)// to the top
             {
                 walkUp(&player2);
-            } else if (receivedInstruction &= (1 << 2)) // to the bottom
+            } else if (receivedInstruction &= 0x04) // to the bottom
             {
                 walkDown(&player2);
             }

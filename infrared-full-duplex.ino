@@ -34,7 +34,7 @@ void sendData(uint8_t d){
 }
 
 uint8_t readValue(){
-    // Serial.println(measuredTime);
+     //Serial.println(measuredTime);
 
     //measuredTime decides what kind of signal we just received
     //this signal can be a start, stop, 1 or 0 bit
@@ -75,8 +75,8 @@ uint8_t readValueOld(){
             receivedData <<= 1;
         } else if(measuredTime > 200 && measuredTime < 260){
             startCollecting = 0;
-            //          Serial.print(receivedData );
-            //          Serial.print("\n");
+                     Serial.print(receivedData );
+				     Serial.print("\n");
 
             receivedData = 0;
             return receivedData;
@@ -94,10 +94,10 @@ ISR(TIMER0_COMPA_vect){
 }
 
 ISR(INT0_vect) {
-    //Serial.println("test3");
+    
     if(sentData) {
-        if(PIND & (1 << PIND2)) {
-            IR_ENABLE;
+        if(PIND & (1 << PIND2)) { 
+            IR_ENABLE; sendtime = 0xFFFF;
             if(nbit) SEND_BUFFER;
             else {
                 sentData = 0x00;
