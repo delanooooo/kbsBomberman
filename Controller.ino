@@ -42,7 +42,7 @@ void initMain() {
 
 	ir_setup();
 	PC_ENABLE;
-	IR_ENABLE;
+	IR_DISABLE;
 	
 	
 	//Serial.begin(9600); 
@@ -116,8 +116,8 @@ void initGame() {
 	
 
 	//init timer
-	TCCR2A = (1 << COM2A0) | (1 << WGM21);
-	TCCR2B = (1 << CS22) | (1 << CS20); //1024 prescale
+	TCCR2A = (0 << COM2A0) | (1 << WGM21);
+	TCCR2B = (1 << CS22) | (1 << CS20) | (1 << CS21); //1024 prescale
 	OCR2A = 156; //approximately every 10 microseconds
 	TIMSK2 |= (1 << OCIE2A); //enable timer compare match interupt
 
@@ -199,7 +199,7 @@ void gameLoop() {
 				sendValue |= (1 << 2);
 			}
 			if(sendValue){
-			sendData(sendValue);
+			sendData(0x41);
 			}
 			player1.movementTimer = timer;
 		}

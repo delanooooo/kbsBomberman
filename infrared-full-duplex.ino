@@ -158,11 +158,12 @@ void ir_setup(){
 	
     TCCR0A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
 	TCCR0B |= (1 << WGM02) | (1 << CS00); //no prescaler 
-    OCR2A = 210; //210 corresponds to 13 microseconds
+    OCR0A = 210; //210 corresponds to 13 microseconds
     TIMSK0 |= (1 << OCIE0A); //enable datatimer compare match interupt
 
     DDRD |= (1 << PIND2); // interrupt pin
     DDRD |= (1 << PIND3); // infrared pin 
+	DDRD |= (1 << PIND6);
 	
 	sei();
 }
