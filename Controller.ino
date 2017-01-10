@@ -35,13 +35,13 @@ menuItems currentItem = Instructions;
 void initMain() {
     sei();
 
-    TCCR0A |= (1 << WGM01);
-    TCCR0A |= (1 << WGM00);
+   // TCCR0A |= (1 << WGM01);
+   // TCCR0A |= (1 << WGM00);
 
-    TCCR0B |= (1 << CS01);
+   // TCCR0B |= (1 << CS01);
     TCCR0B |= (1 << CS00);
 
-    TIMSK0 |= (1 << TOIE0);
+   // TIMSK0 |= (1 << TOIE0);
 
     TCCR1B = 0;
 
@@ -50,9 +50,9 @@ void initMain() {
 
     TCCR1A |= (1 << WGM10);
 
-    TCCR2B |= (1 << CS22);
+   // TCCR2B |= (1 << CS22);
 
-    TCCR2A |= (1 << WGM20);
+   // TCCR2A |= (1 << WGM20);
 
     ADCSRA |= (1 << ADPS2);
     ADCSRA |= (1 << ADPS1);
@@ -60,7 +60,7 @@ void initMain() {
 
     ADCSRA |= (1 << ADEN);
 
-    UCSR0B = 0;
+    //UCSR0B = 0;
 
 
     nunchuck_setpowerpins();
