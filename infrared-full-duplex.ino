@@ -99,7 +99,7 @@ ISR(INT0_vect) {
     if(sentData) {
         if(PIND & (1 << PIND2)) {
           */  IR_ENABLE;
-sendtime = 0xFF;/*
+sendtime = 0xFFFF;/*
             if(nbit) SEND_BUFFER;
             else {
                 sentData = 0x00;
@@ -144,9 +144,9 @@ void ir_setup(){
     cli();
 	
     //Pin change interrupt
-    PCICR = (1 << PCIE0) | (1 << PCIE2); //pin group for PORTD
-    EIMSK |= (1 << INT0); // Listen to PIND2 for pin change interrupt
-    PCMSK2 |= (1 << PCINT19); //PIND3 / digital pin 3
+    PCICR |= (1 << PCIE2); //pin group for PORTD
+    //EIMSK |= (1 << INT0); // Listen to PIND2 for pin change interrupt
+    PCMSK2 |= (1 << PCINT20); //PIND3 / digital pin 3
 
     // moet nog naar gekeken worden vvvvvv
     //EICRA = (1 << ISC11) | (1 << ISC00); //create interrupt on any logical change
@@ -156,13 +156,12 @@ void ir_setup(){
     /*Timer*/
     //listen for interrupts on compare match a
 	
-    TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-	TCCR2B |= (0 << WGM22) | (1 << CS20); //no prescaler
+	TCCR2B |= (0 << WGM22) | (1 << CS20); //no prescaler 
     OCR2A = 210; //210 corresponds to 13 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
 
-    DDRD |= (1 << PIND2);
-    DDRD |= (1 << PIND3); // infraredpin 
+    DDRD |= (1 << PIND2); // interrupt pin
+    DDRD |= (1 << PIND3); // infrared pin 
 	
 	sei();
 }

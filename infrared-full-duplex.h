@@ -25,11 +25,11 @@ extern volatile uint8_t sentData;
 #define SEND_ONE     sendtime = datatimer + ONE_SPACE
 #define SEND_ZERO    sendtime = datatimer + ZERO_SPACE
 
-#define IR_DISABLE   DDRB &= ~(1 << PIND3)
-#define IR_ENABLE    DDRB |= (1 << PIND3)
+#define IR_DISABLE   DDRD &= ~(1 << PIND3)
+#define IR_ENABLE    DDRD |= (1 << PIND3)
 
-#define PC_DISABLE   DDRB &= ~(1 << PIND2)
-#define PC_ENABLE    DDRB |= (1 << PIND2)
+#define PC_DISABLE   DDRD &= ~(1 << PIND2)
+#define PC_ENABLE    DDRD |= (1 << PIND2)
 
 #define QUEUE_SIZE   100
 
