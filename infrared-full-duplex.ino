@@ -98,7 +98,7 @@ ISR(INT0_vect) {
             if(nbit) SEND_BUFFER;
             else {
                 sentData = 0x00;
-                sendtime = 0;
+                sendtime = 0xFF;
             }
         }
         else {
