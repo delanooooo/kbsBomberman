@@ -35,30 +35,30 @@ menuItems currentItem = Instructions;
 void initMain() {
     sei();
 
-    sbi(TCCR0A, WGM01);
-    sbi(TCCR0A, WGM00);
+    TCCR0A |= (1 << WGM01);
+    TCCR0A |= (1 << WGM00);
 
-    sbi(TCCR0B, CS01);
-    sbi(TCCR0B, CS00);
+    TCCR0B |= (1 << CS01);
+    TCCR0B |= (1 << CS00);
 
-    sbi(TIMSK0, TOIE0);
+    TIMSK0 |= (1 << TOIE0);
 
     TCCR1B = 0;
 
-    sbi(TCCR1B, CS11);
-    sbi(TCCR1B, CS10);
+    TCCR1B |= (1 << CS11);
+    TCCR1B |= (1 << CS10);
 
-    sbi(TCCR1A, WGM10);
+    TCCR1A |= (1 << WGM10);
 
-    sbi(TCCR2B, CS22);
+    TCCR2B |= (1 << CS22);
 
-    sbi(TCCR2A, WGM20);
+    TCCR2A |= (1 << WGM20);
 
-    sbi(ADCSRA, ADPS2);
-    sbi(ADCSRA, ADPS1);
-    sbi(ADCSRA, ADPS0);
+    ADCSRA |= (1 << ADPS2);
+    ADCSRA |= (1 << ADPS1);
+    ADCSRA |= (1 << ADPS0);
 
-    sbi(ADCSRA, ADEN);
+    ADCSRA |= (1 << ADEN);
 
     UCSR0B = 0;
 
