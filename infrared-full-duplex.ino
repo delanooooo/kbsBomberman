@@ -134,24 +134,27 @@ ISR(PCINT2_vect){
 
 void ir_setup(){
     cli();
-
+	
     //Pin change interrupt
     PCICR = (1 << PCIE0) | (1 << PCIE2); //pin group for PORTD
     PCMSK0 |= (1 << PCINT4); // Listen to PINB4 for pin change interrupt
     PCMSK2 |= (1 << PCINT19); //PIND3 / digital pin 3
 
     // moet nog naar gekeken worden vvvvvv
-    EICRA = (1 << ISC11) | (1 << ISC00); //create interrupt on any logical change
-    EICRA |= (1 << ISC10);
+    //EICRA = (1 << ISC11) | (1 << ISC00); //create interrupt on any logical change
+    //EICRA |= (1 << ISC10);
     // moet nog naar gekeken worden ^^^^^^
 
     /*Timer*/
     //listen for interrupts on compare match a
+	
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-    TCCR2B |= (1 << WGM22) | (1 << CS20); //no prescaler
+	TCCR2B |= (0 << WGM22) | (1 << CS20); //no prescaler
     OCR2A = 210; //210 corresponds to 13 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
 
     DDRB |= (0 << PINB4);
-    DDRB |= (1 << PINB3); // infraredpin sei();
+    DDRB |= (1 << PINB3); // infraredpin 
+	
+	sei();
 }
