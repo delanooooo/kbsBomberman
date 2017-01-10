@@ -113,7 +113,7 @@ ISR(INT0_vect) {
 //This interrupt triggers if there is any change coming from the sensor
 ISR(PCINT2_vect){
     //check what state the sensor is in, rising or falling edge
-    if(PIND & (1 << PIND5)){
+    if(PIND & (1 << PIND4)){
         //rising edge means we have a new bit incoming,
         //so we timestamp the value our datatimer is on
         measuredTime = datatimer;
