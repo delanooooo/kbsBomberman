@@ -113,7 +113,7 @@ ISR(INT0_vect) {
 //This interrupt triggers if there is any change coming from the sensor
 ISR(PCINT2_vect){
     //check what state the sensor is in, rising or falling edge
-    if(PIND & (1 << PIND3)){
+    if(PIND & (1 << PIND5)){
         //rising edge means we have a new bit incoming,
         //so we timestamp the value our datatimer is on
         measuredTime = datatimer;
@@ -149,12 +149,12 @@ void ir_setup(){
     //listen for interrupts on compare match a
 	
     TCCR2A = (1 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-	TCCR2B |= (1 << WGM22) | (1 << CS20); //no prescaler
+	TCCR2B |= (0 << WGM22) | (1 << CS20); //no prescaler
     OCR2A = 210; //210 corresponds to 13 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
 
     DDRB |= (0 << PIND2);
-    DDRB |= (1 << PIND6); // infraredpin 
+    DDRB |= (1 << PIND3); // infraredpin 
 	
 	sei();
 }
