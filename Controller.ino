@@ -41,8 +41,12 @@ void initMain() {
 	lcd.led(225);
 
 	ir_setup();
-
-	//Serial.begin(9600); // serial monitor
+	PC_ENABLE;
+	IR_ENABLE;
+	
+	
+	//Serial.begin(9600); 
+	// serial monitor
 	showMenu();
 }
 
@@ -202,7 +206,7 @@ void gameLoop() {
 		
 		receivedInstruction = 0;
 		//player2 movement
-		readValue();
+		//readValue();
 		if(!startCollecting){
 		receivedInstruction = receivedData;
 		}

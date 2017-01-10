@@ -2,7 +2,7 @@
 
 //  Variables
 volatile uint16_t datatimer = 0;
-volatile uint16_t sendtime = 0;
+volatile uint16_t sendtime = 0xFFFF;
 volatile uint16_t measuredTime = 0;
 
 char receivedData;
@@ -77,6 +77,7 @@ uint8_t readValueOld(){
             startCollecting = 0;
 //          Serial.print(receivedData );
 //          Serial.print("\n");
+
             receivedData = 0;
             return receivedData;
         }
@@ -88,17 +89,20 @@ ISR(TIMER2_COMPA_vect){
     datatimer++;
     if(datatimer > sendtime) {
         PORTD ^= (1 << PIND2);
+							
     }
 }
 
 ISR(INT0_vect) {
+				//Serial.println("test3");
+/*
     if(sentData) {
         if(PIND & (1 << PIND2)) {
-            IR_ENABLE;
+          */  IR_ENABLE;/*
             if(nbit) SEND_BUFFER;
             else {
                 sentData = 0x00;
-                sendtime = 0xFF;
+                sendtime = 0xFFFF;
             }
         }
         else {
@@ -110,7 +114,7 @@ ISR(INT0_vect) {
 
             nbit >>= 1;
         }
-    }
+    }*/
 }
 
 //This interrupt triggers if there is any change coming from the sensor
@@ -156,8 +160,8 @@ void ir_setup(){
     OCR2A = 210; //210 corresponds to 13 microseconds
     TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
 
-    DDRB |= (0 << PIND2);
-    DDRB |= (1 << PIND3); // infraredpin 
+    DDRD |= (1 << PIND2);
+    DDRD |= (1 << PIND3); // infraredpin 
 	
 	sei();
 }
