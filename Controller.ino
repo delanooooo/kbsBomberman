@@ -116,10 +116,10 @@ void initGame() {
 	
 
 	//init timer
-	TCCR0A = (1 << COM0A0) | (1 << WGM01);
-	TCCR0B = (1 << CS02) | (1 << CS00); //1024 prescale
-	OCR0A = 156; //approximately every 10 microseconds
-	TIMSK0 |= (1 << OCIE0A); //enable timer compare match interupt
+	TCCR2A = (1 << COM2A0) | (1 << WGM21);
+	TCCR2B = (1 << CS22) | (1 << CS20); //1024 prescale
+	OCR2A = 156; //approximately every 10 microseconds
+	TIMSK2 |= (1 << OCIE2A); //enable timer compare match interupt
 
 	secondsTimer = 15;
 
@@ -516,7 +516,7 @@ void walkUp(Bomberman *player) {
 	}
 }
 
-ISR(TIMER0_COMPA_vect) {
+ISR(TIMER2_COMPA_vect) {
 	timer++;
 }
 

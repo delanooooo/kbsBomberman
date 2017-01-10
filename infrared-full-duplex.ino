@@ -85,7 +85,7 @@ uint8_t readValueOld(){
 }
 
 // Interrupt service routines
-ISR(TIMER2_COMPA_vect){
+ISR(TIMER0_COMPA_vect){
     datatimer++;
     if(datatimer > sendtime) {
         PORTD ^= (1 << PIND2);
@@ -156,10 +156,10 @@ void ir_setup(){
     /*Timer*/
     //listen for interrupts on compare match a
 	
-    TCCR2A = (0 << COM2A0) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20);
-	TCCR2B |= (0 << WGM22) | (1 << CS20); //no prescaler 
+    TCCR0A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
+	TCCR0B |= (1 << WGM02) | (1 << CS00); //no prescaler 
     OCR2A = 210; //210 corresponds to 13 microseconds
-    TIMSK2 |= (1 << OCIE2A); //enable datatimer compare match interupt
+    TIMSK0 |= (1 << OCIE0A); //enable datatimer compare match interupt
 
     DDRD |= (1 << PIND2); // interrupt pin
     DDRD |= (1 << PIND3); // infrared pin 
