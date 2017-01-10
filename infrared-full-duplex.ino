@@ -98,7 +98,8 @@ ISR(INT0_vect) {
 /*
     if(sentData) {
         if(PIND & (1 << PIND2)) {
-          */  IR_ENABLE;/*
+          */  IR_ENABLE;
+sendtime = 0xFF;/*
             if(nbit) SEND_BUFFER;
             else {
                 sentData = 0x00;
