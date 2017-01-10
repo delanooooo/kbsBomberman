@@ -96,7 +96,10 @@ ISR(INT0_vect) {
         if(PIND & (1 << PIND2)) {
             IR_ENABLE;
             if(nbit) SEND_BUFFER;
-            else sentData = 0x00;
+            else {
+                sentData = 0x00;
+                sendtime = 0;
+            }
         }
         else {
             IR_DISABLE;
@@ -142,7 +145,7 @@ void ir_setup(){
 
     // moet nog naar gekeken worden vvvvvv
     //EICRA = (1 << ISC11) | (1 << ISC00); //create interrupt on any logical change
-    EICRA |= (1 << ISC10);
+    EICRA |= (1 << ISC00);
     // moet nog naar gekeken worden ^^^^^^
 
     /*Timer*/
