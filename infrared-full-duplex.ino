@@ -13,18 +13,18 @@ volatile uint8_t nbit = 0;
 volatile uint8_t sentData = 0;
 
 /*
-int main(void){
-    ir_setup();
+   int main(void){
+   ir_setup();
 
-    IR_ENABLE;
-    PC_ENABLE;
+   IR_ENABLE;
+   PC_ENABLE;
 
-    for(;;){
-        sendData(0x41);
-        _delay_ms(10);
-    }
-}
-*/
+   for(;;){
+   sendData(0x41);
+   _delay_ms(10);
+   }
+   }
+ */
 
 void sendData(uint8_t d){
     IR_DISABLE;
@@ -56,8 +56,8 @@ uint8_t readValue(){
         } else if(measuredTime > 80 && measuredTime < 110){ //stop bit
             //wait for a new start signal, discard every other signal
             startCollecting = 0;
-//          Serial.print(receivedData , HEX);
-//          Serial.print("\n");
+            //          Serial.print(receivedData , HEX);
+            //          Serial.print("\n");
             return receivedData;    //received byte
         }
     }
@@ -75,8 +75,8 @@ uint8_t readValueOld(){
             receivedData <<= 1;
         } else if(measuredTime > 200 && measuredTime < 260){
             startCollecting = 0;
-//          Serial.print(receivedData );
-//          Serial.print("\n");
+            //          Serial.print(receivedData );
+            //          Serial.print("\n");
 
             receivedData = 0;
             return receivedData;
@@ -89,17 +89,15 @@ ISR(TIMER0_COMPA_vect){
     datatimer++;
     if(datatimer > sendtime) {
         PORTD ^= (1 << PIND2);
-							
+
     }
 }
 
 ISR(INT0_vect) {
-				//Serial.println("test3");
-/*
+    //Serial.println("test3");
     if(sentData) {
         if(PIND & (1 << PIND2)) {
-          */  IR_ENABLE;
-sendtime = 0xFFFF;/*
+            IR_ENABLE;
             if(nbit) SEND_BUFFER;
             else {
                 sentData = 0x00;
@@ -115,7 +113,7 @@ sendtime = 0xFFFF;/*
 
             nbit >>= 1;
         }
-    }*/
+    }
 }
 
 //This interrupt triggers if there is any change coming from the sensor
@@ -142,7 +140,7 @@ ISR(PCINT2_vect){
 
 void ir_setup(){
     cli();
-	
+
     //Pin change interrupt
     PCICR |= (1 << PCIE2); //pin group for PORTD
     //EIMSK |= (1 << INT0); // Listen to PIND2 for pin change interrupt
@@ -155,15 +153,15 @@ void ir_setup(){
 
     /*Timer*/
     //listen for interrupts on compare match a
-	
+
     TCCR0A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
-	TCCR0B |= (1 << WGM02) | (1 << CS00); //no prescaler 
+    TCCR0B |= (1 << WGM02) | (1 << CS00); //no prescaler 
     OCR0A = 210; //210 corresponds to 13 microseconds
     TIMSK0 |= (1 << OCIE0A); //enable datatimer compare match interupt
 
     DDRD |= (1 << PIND2); // interrupt pin
     DDRD |= (1 << PIND3); // infrared pin 
-	DDRD |= (1 << PIND6);
-	
-	sei();
+    DDRD |= (1 << PIND6);
+
+    sei();
 }
