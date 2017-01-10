@@ -20,3 +20,5 @@ kbsBomberman.atsln
 *.atsuo
 Debug/board.buildinfo
 *.o
+nunchuck_funcs.h
+*.ino
