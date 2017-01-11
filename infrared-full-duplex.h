@@ -11,7 +11,7 @@ extern volatile uint8_t nbit;
 extern volatile uint8_t sentData;
 
 //  Defines
-//  Amount of cycles set to send a specific signal
+//  Amount of (timer)cycles set to send a specific signal
 #define START_SPACE  65
 #define STOP_SPACE   90
 #define ONE_SPACE    40
@@ -37,5 +37,4 @@ extern volatile uint8_t sentData;
 void ir_setup();
 void sendData(uint8_t data);
 
-uint8_t readValueOld();
-uint8_t readValue();
+void readValue();
