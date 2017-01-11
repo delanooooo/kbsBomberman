@@ -68,7 +68,7 @@ ISR(INT0_vect){
             }
         }
 
-        // if this interrupt is triggerd while we were sending a BUFFER signal
+        // if this interrupt is triggered while we were sending a BUFFER signal
         else {
             IR_DISABLE;
 
