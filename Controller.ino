@@ -5,6 +5,7 @@ char player2Name[] = "player 2";
 
 Bomberman player1, player2;
 
+//Levelgrid holds the position of all objects in the playing field.
 object levelGrid[levelSizeX][levelSizeY] = {
 	{WALL, WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,  WALL,   WALL, WALL,  WALL,  WALL,  WALL,  WALL},
 	{WALL, EMPTY,  EMPTY,  EMPTY,  BARREL, BARREL, EMPTY,  BARREL, BARREL, EMPTY,  EMPTY,  BARREL, EMPTY, EMPTY,  WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL},
@@ -26,8 +27,8 @@ object levelGrid[levelSizeX][levelSizeY] = {
 byte zBut, cBut, joyX, joyY;
 MI0283QT9 lcd; //MI0283QT9 Adapter v1
 
-uint16_t timer;
-uint8_t secondsTimer;
+uint16_t timer;//gameloop counter
+uint8_t secondsTimer;//countdown timer for playing time in seconds
 
 menuItems currentItem = Instructions;
 
@@ -127,7 +128,7 @@ void showMenu() {
 		showHighScores();
 	}
 }
-
+//when the game starts this method is called.
 void initGame() {
 	lcd.fillScreen(RGB(255, 255, 255));
 	lcd.fillRect(240, 5, 76, 231, RGB(0, 0, 0)); // HUD
@@ -171,8 +172,8 @@ void initGame() {
 	}
 	gameLoop();
 }
-uint8_t sendValue;
-uint8_t receivedInstruction;
+uint8_t sendValue;//send via infrared.
+uint8_t receivedInstruction;//received via infrared.
 
 void gameLoop() {
 	while (secondsTimer != 0) {
@@ -244,8 +245,8 @@ void gameLoop() {
 			player2.movementTimer = timer;
 		}
 
-		checkBombs(&player1);
-		checkBombs(&player2);
+		checkBombs(&player1);//Can the placed bombs of player 1 explode yet?
+		checkBombs(&player2);//Can the placed bombs of player 2 explode yet?
 		checkExplosions();
 
 		if (timer % 100 == 0) {
@@ -293,7 +294,7 @@ void placeBomb(Bomberman *player) {
 		if (player->bombsPlaced < player->bombMaxAmount) {
 			levelGrid[player->y][player->x] = BOMB;
 			drawBomb(player->x, player->y);
-
+      //save the bomb in the linked list and allocate memory for it.
 			struct Bomb *current = player->head;
 			while (current->next != NULL) {
 				current = current->next;
@@ -310,19 +311,18 @@ void placeBomb(Bomberman *player) {
 		}
 	}
 }
-
+//Can the bombs explode yet?
 void checkBombs(Bomberman *player) {
 
 	struct Bomb *current = player->head->next;
 	struct Bomb *prev = player->head;
 	while (current != NULL) {
-
 		if (timer >= current->detonateTime) {
 			levelGrid[current->y][current->x] = EMPTY;
 			drawEmpty(current->x, current->y);
 			explodeBomb(player->bombRadius, current->x, current->y);
 			prev->next = current->next;
-
+      //remove the bomb because it exploded
 			free(current);
 			current = prev->next;
 			player->bombsPlaced--;
@@ -336,6 +336,7 @@ void checkBombs(Bomberman *player) {
 void explodeBomb(int radius, int x, int y) {
 
 	createExplosion(x, y);
+  //create explosions horizontal and vertical in the following loops.
 	for (int i = 1; i < radius; i++) {
 		if (createExplosion(x, y + i) == FALSE) {
 			break;
@@ -357,7 +358,7 @@ void explodeBomb(int radius, int x, int y) {
 		}
 	}
 }
-
+//This method checks all bombs for their location and returns it.
 Bomb * findBombOnLocation(int x, int y) {
 	struct Bomb *current = player1.head->next;
 	while (current != NULL) {
@@ -384,7 +385,7 @@ bool createExplosion(int x, int y) {
 	if (x < 0 || x > levelSizeX - 1 || y < 0 || y > levelSizeY - 1) {
 		return false;
 	}
-
+  //Explosions stop at a wall and at a barrel. When it hits a bomb the bomb explodes.
 	if (levelGrid[y][x] == EMPTY) {
 		initExplosion(x, y);
 		} else if (levelGrid[y][x] == PLAYER) {
@@ -410,7 +411,7 @@ void initExplosion(int x, int y) {
 	while (current->next != NULL) {
 		current = current->next;
 	}
-
+  //allocate memory for explosion tile and save it.
 	struct ExplosionTile *temp = (struct ExplosionTile*) malloc(sizeof (struct ExplosionTile));
 	temp->x = x;
 	temp->y = y;
@@ -424,7 +425,7 @@ void checkExplosions() {
 	struct ExplosionTile *current = ExplosionHead->next;
 	struct ExplosionTile *prev = ExplosionHead;
 	while (current != NULL) {
-
+    //remove explosion when time is over.
 		if (timer >= current->removeTime) {
 			levelGrid[current->y][current->x] = EMPTY;
 			drawEmpty(current->x, current->y);
@@ -658,7 +659,7 @@ void gameOver() {
 	lcd.print("OVER");
 	lcd.setTextSize(1);
 
-	_delay_ms(150);
+	_delay_ms(3000);
 	int score1 = player2.deaths;
 	int score2 = player1.deaths;
 
@@ -746,7 +747,7 @@ void highScores(int pl1Score, int pl2Score) {
 		lcd.print(player1Name);
 		lcd.setCursor(35, 100);
 		lcd.print("BROKE THE RECORD");
-		_delay_ms(150);
+		_delay_ms(2000);
 		getLetter(pl1Score);
 
 		} else if (pl2Score > highScore3) {

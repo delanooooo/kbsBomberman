@@ -28,7 +28,7 @@ typedef struct Bomberman {
 	int bombRadius;
 	int bombMaxAmount;
 	int bombsPlaced;
-	struct Bomb *head;
+	struct Bomb *head;//Is a linked list for possible bombs the player has.
 	bool state;
 	int deaths;
 	uint16_t invinsibleTimer;
@@ -49,7 +49,7 @@ struct ExplosionTile {
 	struct ExplosionTile *next;
 };
 
-struct ExplosionTile *ExplosionHead;
+struct ExplosionTile *ExplosionHead;//Linked list that holds the explosions.
 
 typedef enum {
 	Start, Instructions, Highscores
