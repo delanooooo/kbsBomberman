@@ -19,7 +19,7 @@ void sendData(uint8_t d){
     nbit = 0x80;
 }
 
-uint8_t readValue(){
+void readValue(){
     //measuredTime decides what kind of signal we just received
     //this signal can be a start, stop, 1 or 0 bit
     //only start processing measuredTime if we actually received a start bit
@@ -37,7 +37,6 @@ uint8_t readValue(){
         } else if(measuredTime > 80 && measuredTime < 110){ //stop bit
             //wait for a new start signal, discard every other signal
             startCollecting = 0;
-            return receivedData;    //received byte
         }
     }
 }
