@@ -9,13 +9,3 @@
 int main(void){
     initMain();
 }
-
-/*
-   void setup(){
-   initMain();
-   }
-
-   void loop(){
-
-   }
- */
