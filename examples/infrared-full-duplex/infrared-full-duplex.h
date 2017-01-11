@@ -33,12 +33,9 @@ volatile uint8_t sentData = 0;
 #define PC_DISABLE DDRB &= ~(1 << PINB4)
 #define PC_ENABLE  DDRB |= (1 << PINB4)
 
-#define QUEUE_SIZE 100
-
 // Prototypes
 void ir_setup();
 void sendData(uint8_t data);
 
 void IR_setup();
-uint8_t readValueOld();
-uint8_t readValue();
+void readValue();
